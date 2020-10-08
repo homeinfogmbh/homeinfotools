@@ -4,7 +4,7 @@ from distutils.core import setup
 
 
 setup(
-    name='hids-scripts',
+    name='hidsl-scripts',
     author='HOMEINFO - Digitale Informationssysteme GmbH',
     author_email='info@homeinfo.de',
     maintainer='Richard Neumann',
