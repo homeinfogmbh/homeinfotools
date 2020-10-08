@@ -31,7 +31,7 @@ def main():
         exit(3)
 
     if args.file is None:
-        stdout.write(tar_file)
+        stdout.buffer.write(tar_file)
     else:
         with args.file.open('wb') as file:
             file.write(tar_file)
