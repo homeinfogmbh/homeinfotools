@@ -1,12 +1,12 @@
 """OpenVPN configuration package client."""
 
-from getpass import getpass
 from logging import DEBUG, INFO, basicConfig
-from sys import exit    # pylint: disable=W0622
+from sys import exit, stdout    # pylint: disable=W0622
 
 from hidsl.logging import LOG_FORMAT, LOGGER
 from hidsl.vpn.argparse import get_args
-from hidsl.vpn.functions import retrieve_data
+from hidsl.vpn.exceptions import DownloadError, LoginError
+from hidsl.vpn.functions import read_credentials, get_vpn_data
 
 
 __all__ = ['main']
@@ -17,24 +17,21 @@ def main():
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
-
-    if args.user:
-        user = args.user
-    else:
-        try:
-            user = input('User name: ')
-        except (EOFError, KeyboardInterrupt):
-            print()
-            LOGGER.error('Aborted by user.')
-            exit(1)
+    user, passwd = read_credentials(args.user)
 
     try:
-        passwd = getpass('Password: ')
-    except (EOFError, KeyboardInterrupt):
-        print()
-        LOGGER.error('Aborted by user.')
-        exit(1)
+        tar_file = get_vpn_data(user, passwd, args.system, args.windows)
+    except LoginError as error:
+        LOGGER.error('Error during login.')
+        LOGGER.debug(error)
+        exit(2)
+    except DownloadError as error:
+        LOGGER.error('Error during VPN data retrieval.')
+        LOGGER.debug(error)
+        exit(3)
 
-    login_data = {'account': user, 'passwd': passwd}
-    vpn_data = {'system': args.system, 'windows': args.windows}
-    retrieve_data(login_data, vpn_data, args.file)
+    if args.file is None:
+        stdout.write(tar_file)
+    else:
+        with args.file.open('wb') as file:
+            file.write(tar_file)
