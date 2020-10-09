@@ -161,16 +161,16 @@ def upgrade(system: int, args: Namespace, jobs: DictProxy):
             _upgrade(system, args, job)
         except OfflineError as error:
             LOGGER.error('System is offline: %i', system)
-            LOGGER.debug('%s', error)
+            LOGGER.info('%s', error)
         except SystemIOError as error:
             LOGGER.error('I/O error: %i', system)
-            LOGGER.debug('%s', error)
+            LOGGER.info('%s', error)
         except PacmanError as error:
             LOGGER.error('Pacman error: %i', system)
-            LOGGER.debug('%s', error)
+            LOGGER.info('%s', error)
         except UnknownError as error:
             LOGGER.error('Unknown error: %i', system)
-            LOGGER.debug('%s', error)
+            LOGGER.info('%s', error)
 
     if args.logfile is not None:
         with args.logfile.open('a') as logfile:
