@@ -61,7 +61,7 @@ def sudo(*command: str) -> Tuple[str]:
     return (SUDO, ' '.join(command))
 
 
-def get_configuration(args: Namespace) -> Iterable:
+def get_configuration(args: Namespace) -> Iterable[str]:
     """Yields configurations from the given arguments."""
 
     args = args._get_kwargs()   # pylint: disable=W0212
