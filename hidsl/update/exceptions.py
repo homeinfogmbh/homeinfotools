@@ -28,7 +28,7 @@ class RemoteProcessError(Exception):
         """Returns a string representation of the error."""
         items = []
 
-        if stdout := self.stdout is not None:
+        if (stdout := self.stdout) is not None:
             try:
                 stdout = stdout.decode()
             except UnicodeDecodeError:
@@ -36,7 +36,7 @@ class RemoteProcessError(Exception):
 
             items.append(f'STDOUT: {stdout}')
 
-        if stderr := self.stderr is not None:
+        if (stderr := self.stderr) is not None:
             try:
                 stderr = stderr.decode()
             except UnicodeDecodeError:

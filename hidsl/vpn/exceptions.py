@@ -13,7 +13,7 @@ class WebAPIError(Exception):
 
     def __str__(self):
         """Returns the content as string."""
-        if content := self.content is None:
+        if (content := self.content) is None:
             return ''
 
         try:
