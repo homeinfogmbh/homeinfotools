@@ -1,4 +1,4 @@
-"""Multiprocessing proxies."""
+"""Functions to access the multiprocessing namespace."""
 
 from datetime import datetime
 from multiprocessing.managers import NamespaceProxy
