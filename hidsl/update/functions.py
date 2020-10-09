@@ -68,9 +68,6 @@ def get_configuration(args: Namespace) -> Iterable:
     maxlen = max(len(key) for key, _ in args)
 
     for key, value in args:
-        if key == 'system':
-            value = len(value)
-
         padding = maxlen - len(key)
         yield f'{key}' + ' ' * padding + f' = {value}'
 
