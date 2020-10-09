@@ -134,14 +134,14 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
         job.keyring = success = completed_process.returncode == 0
 
         if not success:
-            LOGGER.error('Could not update keyring: %i', system)
+            LOGGER.warning('Could not update keyring: %i', system)
             raise get_exception(completed_process)
 
     completed_process = _upgrade_system(system, args=args)
     job.sysupgrade = success = completed_process.returncode == 0
 
     if not success:
-        LOGGER.error('Could not upgrade system: %i', system)
+        LOGGER.warning('Could not upgrade system: %i', system)
         raise get_exception(completed_process)
 
     if args.cleanup:
@@ -149,7 +149,7 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
         job.cleanup = success = completed_process.returncode in {0, 1}
 
         if not success:
-            LOGGER.error('Could not clean up system: %i', system)
+            LOGGER.warning('Could not clean up system: %i', system)
             raise get_exception(completed_process)
 
 
@@ -160,16 +160,16 @@ def upgrade(system: int, args: Namespace, jobs: DictProxy):
         try:
             _upgrade(system, args, job)
         except OfflineError as error:
-            LOGGER.info('System is offline: %i', system)
+            LOGGER.error('System is offline: %i', system)
             LOGGER.debug('%s', error)
         except SystemIOError as error:
-            LOGGER.info('I/O error: %i', system)
+            LOGGER.error('I/O error: %i', system)
             LOGGER.debug('%s', error)
         except PacmanError as error:
-            LOGGER.info('Pacman error: %i', system)
+            LOGGER.error('Pacman error: %i', system)
             LOGGER.debug('%s', error)
         except UnknownError as error:
-            LOGGER.info('Unknown error: %i', system)
+            LOGGER.error('Unknown error: %i', system)
             LOGGER.debug('%s', error)
 
     if args.logfile is not None:
