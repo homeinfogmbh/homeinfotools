@@ -138,7 +138,7 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
             raise get_exception(completed_process)
 
     completed_process = _upgrade_system(system, args=args)
-    job.sysupgrade = success = completed_process == 0
+    job.sysupgrade = success = completed_process.returncode == 0
 
     if not success:
         LOGGER.error('Could not upgrade system: %i', system)
@@ -146,7 +146,7 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
 
     if args.cleanup:
         completed_process = _cleanup_system(system, args=args)
-        job.cleanup = success = completed_process in {0, 1}
+        job.cleanup = success = completed_process.returncode in {0, 1}
 
         if not success:
             LOGGER.error('Could not clean up system: %i', system)
