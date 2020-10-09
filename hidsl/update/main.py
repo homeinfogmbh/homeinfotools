@@ -41,7 +41,7 @@ def main():
     # Initialize log file.
     if args.logfile is not None:
         with args.logfile.open('w') as logfile:
-            logfile.writelines(linesep.join(get_header()) + linesep)
+            logfile.writelines(linesep.join(get_header(args)) + linesep)
 
     with Pool(processes=args.processes) as pool:
         pool.map(proc_func, args.system)
