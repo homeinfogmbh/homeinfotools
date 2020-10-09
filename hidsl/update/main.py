@@ -14,7 +14,7 @@ from hidsl.update.functions import get_log_level
 from hidsl.update.functions import print_finished
 from hidsl.update.functions import print_pending
 from hidsl.update.functions import upgrade
-from hidsl.update.proxy import to_json
+from hidsl.update.namespace import to_json
 
 
 __all__ = ['main']

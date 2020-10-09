@@ -16,7 +16,7 @@ from hidsl.update.exceptions import SystemIOError
 from hidsl.update.exceptions import PacmanError
 from hidsl.update.exceptions import UnknownError
 from hidsl.update.exceptions import get_exception
-from hidsl.update.proxy import get_success, get_pending, to_csv
+from hidsl.update.namespace import get_success, get_pending, to_csv
 
 
 __all__ = [
