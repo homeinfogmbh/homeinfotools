@@ -41,12 +41,12 @@ def get_data(sess: session, login_data: dict, vpn_data: dict) -> bytes:
     response = sess.post(HIS_LOGIN_URL, json=login_data)
 
     if response.status_code != 200:
-        raise LoginError(response.content)
+        raise LoginError(response)
 
     response = sess.post(TERMGR_VPN_URL, json=vpn_data)
 
     if response.status_code != 200:
-        raise DownloadError(response.content)
+        raise DownloadError(response)
 
     return response.content
 
