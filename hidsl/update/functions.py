@@ -16,7 +16,7 @@ from hidsl.update.exceptions import SystemIOError
 from hidsl.update.exceptions import PacmanError
 from hidsl.update.exceptions import UnknownError
 from hidsl.update.exceptions import get_exception
-from hidsl.update.proxy import UpdateJobProxy
+from hidsl.update.proxy import get_success, get_pending, to_csv
 
 
 __all__ = [
@@ -190,25 +190,28 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
 def upgrade(system: int, args: Namespace, jobs: DictProxy):
     """Upgrated the respective system."""
 
-    with UpdateJobProxy(jobs[system]) as job:
-        try:
-            _upgrade(system, args, job)
-        except OfflineError as error:
-            LOGGER.error('System is offline: %i', system)
-            LOGGER.info('%s', error)
-        except SystemIOError as error:
-            LOGGER.error('I/O error: %i', system)
-            LOGGER.info('%s', error)
-        except PacmanError as error:
-            LOGGER.error('Pacman error: %i', system)
-            LOGGER.info('%s', error)
-        except UnknownError as error:
-            LOGGER.error('Unknown error: %i', system)
-            LOGGER.info('%s', error)
+    jobs[system].started = datetime.now()
+
+    try:
+        _upgrade(system, args, jobs[system])
+    except OfflineError as error:
+        LOGGER.error('System is offline: %i', system)
+        LOGGER.info('%s', error)
+    except SystemIOError as error:
+        LOGGER.error('I/O error: %i', system)
+        LOGGER.info('%s', error)
+    except PacmanError as error:
+        LOGGER.error('Pacman error: %i', system)
+        LOGGER.info('%s', error)
+    except UnknownError as error:
+        LOGGER.error('Unknown error: %i', system)
+        LOGGER.info('%s', error)
+
+    jobs[system].finished = datetime.now()
 
     if args.logfile is not None:
         with args.logfile.open('a') as logfile:
-            logfile.write(f'{system},' + job.to_csv() + linesep)
+            logfile.write(f'{system},' + to_csv(jobs[system]) + linesep)
 
 
 def print_finished(jobs: DictProxy, systems: List[int]):
@@ -217,8 +220,8 @@ def print_finished(jobs: DictProxy, systems: List[int]):
     finished = []
 
     for system in systems:
-        if not (proxy := UpdateJobProxy(jobs[system])).pending:
-            if proxy.success:
+        if not get_pending(namespace := jobs[system]):
+            if get_success(namespace):
                 finished.append(str(system))
             else:
                 finished.append(RED.format(system))
@@ -229,6 +232,6 @@ def print_finished(jobs: DictProxy, systems: List[int]):
 def print_pending(jobs: DictProxy, systems: List[int]):
     """Prints pending jobs."""
 
-    pending = (sys for sys in systems if UpdateJobProxy(jobs[sys]).pending)
+    pending = (system for system in systems if get_pending(jobs[system]))
     text = ', '.join(str(system) for system in pending)
     print('Pending:', text, file=stderr)

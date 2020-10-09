@@ -14,22 +14,21 @@ from hidsl.update.functions import get_log_level
 from hidsl.update.functions import print_finished
 from hidsl.update.functions import print_pending
 from hidsl.update.functions import upgrade
-from hidsl.update.proxy import UpdateJobProxy
+from hidsl.update.proxy import to_json
 
 
 __all__ = ['main']
 
 
-def main():
-    """Runs the script."""
+def run(manager: Manager):
+    """Runs the program with a manager."""
 
     args = get_args()
-    manager = Manager()
     jobs = manager.dict()
 
-    # Polulate manage dicts for systems.
+    # Populate namespaces for systems.
     for system in args.system:
-        jobs[system] = manager.dict()
+        jobs[system] = manager.Namespace()
 
     signal(SIGUSR1, lambda signum, frame: print_finished(jobs, args.system))
     signal(SIGUSR2, lambda signum, frame: print_pending(jobs, args.system))
@@ -44,10 +43,17 @@ def main():
             logfile.writelines(linesep.join(get_header(args)) + linesep)
 
     with Pool(processes=args.processes) as pool:
-        pool.map(proc_func, args.system)
+        pool.imap_unordered(proc_func, args.system)
 
     if args.json is not None:
-        json = {system: UpdateJobProxy(jobs[system]).to_json() for system in jobs}
+        json = {system: to_json(jobs[system]) for system in jobs}
 
         with args.json.open('w') as file:
             dump(json, file, indent=2)
+
+
+def main():
+    """Runs the script."""
+
+    with Manager() as manager:
+        run(manager)

@@ -1,68 +1,112 @@
 """Multiprocessing proxies."""
 
 from datetime import datetime
-from multiprocessing.managers import DictProxy
+from multiprocessing.managers import NamespaceProxy
+from typing import Union
 
 
-__all__ = ['UpdateJobProxy']
+__all__ = ['get_success', 'get_pending', 'to_json', 'to_csv']
 
 
-class UpdateJobProxy:
-    """Represents the update state of a system."""
+def get_tasks(namespace: NamespaceProxy) -> Union[bool, None]:
+    """Yields the tasks."""
 
-    def __init__(self, dict_proxy: DictProxy):
-        super().__setattr__('dict_proxy', dict_proxy)
+    try:
+        yield namespace.keyring
+    except AttributeError:
+        yield None
 
-    def __getattr__(self, attr):
-        return self.dict_proxy.get(attr)
+    try:
+        yield namespace.sysupgrade
+    except AttributeError:
+        yield None
 
-    def __setattr__(self, attr, value):
-        self.dict_proxy[attr] = value
+    try:
+        yield namespace.cleanup
+    except AttributeError:
+        yield None
 
-    def __enter__(self):
-        self.started = datetime.now()   # pylint: disable=W0201
-        return self
 
-    def __exit__(self, *_):
-        self.finished = datetime.now()  # pylint: disable=W0201
+def get_success(namespace: NamespaceProxy) -> bool:
+    """Determines whether the system update succeeded."""
 
-    @property
-    def tasks(self):
-        """Yields the tasks."""
-        yield self.keyring
-        yield self.sysupgrade
-        yield self.cleanup
+    return all(task is None or task for task in get_tasks(namespace))
 
-    @property
-    def success(self):
-        """Determines whether the system update succeeded."""
-        return all(task is None or task for task in self.tasks)
 
-    @property
-    def pending(self):
-        """Determines whether the system check is still pending."""
-        return self.started is not None and self.finished is None
+def get_pending(namespace: NamespaceProxy) -> Union[bool, None]:
+    """Determines whether the system check is still pending."""
 
-    @property
-    def duration(self):
-        """Calculates the duration of the upgrade process."""
-        if self.started is None or self.finished is None:
-            return None
+    try:
+        started = namespace.started
+    except AttributeError:
+        started = None
 
-        return self.finished - self.started
+    try:
+        finished = namespace.finished
+    except AttributeError:
+        finished = None
 
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {
-            'started': self.started.isoformat() if self.started else None,
-            'finished': self.finished.isoformat() if self.finished else None,
-            'duration': str(dur) if (dur := self.duration) else dur,
-            'keyring': self.keyring,
-            'sysupgrade': self.sysupgrade,
-            'cleanup': self.cleanup,
-            'success': self.success
-        }
+    return started is not None and finished is None
 
-    def to_csv(self, *, sep: str = ',') -> str:
-        """Returns a tuple for CSV representation."""
-        return sep.join(str(value) for value in self.to_json().values())
+
+def get_duration(namespace: NamespaceProxy) -> Union[datetime, None]:
+    """Calculates the duration of the upgrade process."""
+
+    try:
+        started = namespace.started
+    except AttributeError:
+        return False
+
+    try:
+        finished = namespace.finished
+    except AttributeError:
+        return False
+
+    return finished - started
+
+
+def to_json(namespace: NamespaceProxy) -> dict:
+    """Returns a JSON-ish dict."""
+
+    try:
+        started = namespace.started
+    except AttributeError:
+        started = None
+
+    try:
+        finished = namespace.finished
+    except AttributeError:
+        finished = None
+
+    duration = get_duration(namespace)
+
+    try:
+        keyring = namespace.keyring
+    except AttributeError:
+        keyring = None
+
+    try:
+        sysupgrade = namespace.sysupgrade
+    except AttributeError:
+        sysupgrade = None
+
+    try:
+        cleanup = namespace.cleanup
+    except AttributeError:
+        cleanup = None
+
+    return {
+        'started': started.isoformat() if started else None,
+        'finished': finished.isoformat() if finished else None,
+        'duration': str(duration) if duration else None,
+        'keyring': keyring,
+        'sysupgrade': sysupgrade,
+        'cleanup': cleanup,
+        'success': get_success(namespace)
+    }
+
+
+def to_csv(namespace: NamespaceProxy, *, sep: str = ',') -> str:
+    """Returns a tuple for CSV representation."""
+
+    return sep.join(str(value) for value in to_json(namespace).values())
