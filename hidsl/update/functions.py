@@ -28,6 +28,9 @@ __all__ = [
 ]
 
 
+RED = '\\e[31m{}\\e[0m'
+
+
 def execute(command: Union[Iterable[str], str]) -> CompletedProcess:
     """Executes the given command."""
 
@@ -211,14 +214,21 @@ def upgrade(system: int, args: Namespace, jobs: DictProxy):
 def print_finished(jobs: DictProxy, systems: List[int]):
     """Prints pending jobs."""
 
+    finished = []
+
     for system in systems:
         if not (proxy := UpdateJobProxy(jobs[system])).pending:
-            print(system, 'ok' if proxy.success else 'failed', file=stderr)
+            if proxy.success:
+                finished.append(str(system))
+            else:
+                finished.append(RED.format(system))
+
+    print('Finished:', ', '.join(finished), file=stderr)
 
 
 def print_pending(jobs: DictProxy, systems: List[int]):
     """Prints pending jobs."""
 
-    pending = [sys for sys in systems if UpdateJobProxy(jobs[sys]).pending]
+    pending = (sys for sys in systems if UpdateJobProxy(jobs[sys]).pending)
     text = ', '.join(str(system) for system in pending)
-    print(text, file=stderr)
+    print('Pending:', text, file=stderr)
