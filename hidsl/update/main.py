@@ -2,7 +2,7 @@
 
 from functools import partial
 from json import dump
-from logging import DEBUG, INFO, WARN, basicConfig
+from logging import basicConfig
 from multiprocessing import Manager, Pool
 from os import getpid, linesep
 from signal import SIGUSR1, SIGUSR2, signal
@@ -10,6 +10,7 @@ from signal import SIGUSR1, SIGUSR2, signal
 from hidsl.logging import LOG_FORMAT, LOGGER
 from hidsl.update.argparse import get_args
 from hidsl.update.functions import get_header
+from hidsl.update.functions import get_log_level
 from hidsl.update.functions import print_finished
 from hidsl.update.functions import print_pending
 from hidsl.update.functions import upgrade
@@ -32,7 +33,7 @@ def main():
 
     signal(SIGUSR1, lambda signum, frame: print_finished(jobs, args.system))
     signal(SIGUSR2, lambda signum, frame: print_pending(jobs, args.system))
-    loglevel = DEBUG if args.debug else INFO if args.verbose else WARN
+    loglevel = get_log_level(args)
     basicConfig(format=LOG_FORMAT, level=loglevel)
     proc_func = partial(upgrade, args=args, jobs=jobs)
     LOGGER.info('PID: %s', getpid())

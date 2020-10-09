@@ -2,6 +2,7 @@
 
 from argparse import Namespace
 from datetime import datetime
+from logging import DEBUG, ERROR, INFO, WARNING
 from multiprocessing.managers import DictProxy
 from os import linesep
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
@@ -18,7 +19,13 @@ from hidsl.update.exceptions import get_exception
 from hidsl.update.proxy import UpdateJobProxy
 
 
-__all__ = ['get_header', 'upgrade', 'print_finished', 'print_pending']
+__all__ = [
+    'get_header',
+    'get_log_level',
+    'upgrade',
+    'print_finished',
+    'print_pending'
+]
 
 
 def execute(command: Union[Iterable[str], str]) -> CompletedProcess:
@@ -64,6 +71,18 @@ def get_header(comment: str = '#') -> Iterable[str]:
     yield f'{comment}  Log of: {args}'
     yield f'{comment}  On:     {now}'
     yield comment * multiplier
+
+
+def get_log_level(args: Namespace) -> int:
+    """Returns the set logging level."""
+
+    if args.debuglevel > 0:
+        return INFO
+
+    if args.debuglevel > 1:
+        return DEBUG
+
+    return WARNING if args.verbose else ERROR
 
 
 def _upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
@@ -177,7 +196,7 @@ def upgrade(system: int, args: Namespace, jobs: DictProxy):
             logfile.write(f'{system},' + job.to_csv() + linesep)
 
 
-def print_finished(jobs, systems):
+def print_finished(jobs: DictProxy, systems: List[int]):
     """Prints pending jobs."""
 
     for system in systems:
@@ -185,7 +204,7 @@ def print_finished(jobs, systems):
             print(system, 'ok' if proxy.success else 'failed', file=stderr)
 
 
-def print_pending(jobs, systems):
+def print_pending(jobs: DictProxy, systems: List[int]):
     """Prints pending jobs."""
 
     pending = [sys for sys in systems if UpdateJobProxy(jobs[sys]).pending]

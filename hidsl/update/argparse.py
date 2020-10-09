@@ -27,8 +27,8 @@ def get_args() -> Namespace:
                         help='cleanup unneeded packages after upgrade')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose logging')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='enable debug logging')
+    parser.add_argument('-d', '--debuglevel', type=int, default=0,
+                        help='set debug level')
     parser.add_argument('-y', '--yes', action='store_true',
                         help='make pacman assume yes')
     parser.add_argument('-n', '--no-stdin', action='store_true',
