@@ -11,6 +11,7 @@ from typing import Iterable, List, Tuple, Union
 from hidsl.logging import LOGGER
 from hidsl.update.common import HOSTNAME, PACMAN, SSH, SSH_OPTIONS, SUDO
 from hidsl.update.exceptions import OfflineError
+from hidsl.update.exceptions import SystemIOError
 from hidsl.update.exceptions import PacmanError
 from hidsl.update.exceptions import UnknownError
 from hidsl.update.exceptions import get_exception
@@ -133,14 +134,14 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
         job.keyring = success = completed_process.returncode == 0
 
         if not success:
-            LOGGER.error('Could not update keyring.')
+            LOGGER.error('Could not update keyring: %i', system)
             raise get_exception(completed_process)
 
     completed_process = _upgrade_system(system, args=args)
     job.sysupgrade = success = completed_process == 0
 
     if not success:
-        LOGGER.error('Could not upgrade system.')
+        LOGGER.error('Could not upgrade system: %i', system)
         raise get_exception(completed_process)
 
     if args.cleanup:
@@ -148,7 +149,7 @@ def _upgrade(system: int, args: Namespace, job: DictProxy):
         job.cleanup = success = completed_process in {0, 1}
 
         if not success:
-            LOGGER.error('Could not clean up system.')
+            LOGGER.error('Could not clean up system: %i', system)
             raise get_exception(completed_process)
 
 
@@ -158,14 +159,17 @@ def upgrade(system: int, args: Namespace, jobs: DictProxy):
     with UpdateJobProxy(jobs[system]) as job:
         try:
             _upgrade(system, args, job)
-        except OfflineError:
-            LOGGER.error('System is offline.')
-        except IOError:
-            LOGGER.error('I/O error.')
-        except PacmanError:
-            LOGGER.error('Pacman error.')
+        except OfflineError as error:
+            LOGGER.info('System is offline: %i', system)
+            LOGGER.debug('%s', error)
+        except SystemIOError as error:
+            LOGGER.info('I/O error: %i', system)
+            LOGGER.debug('%s', error)
+        except PacmanError as error:
+            LOGGER.info('Pacman error: %i', system)
+            LOGGER.debug('%s', error)
         except UnknownError as error:
-            LOGGER.error('Unknown error.')
+            LOGGER.info('Unknown error: %i', system)
             LOGGER.debug('%s', error)
 
     if args.logfile is not None:

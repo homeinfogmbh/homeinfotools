@@ -5,22 +5,15 @@ from subprocess import CompletedProcess
 
 __all__ = [
     'OfflineError',
+    'SystemIOError',
     'PacmanError',
     'UnknownError',
     'get_exception'
 ]
 
 
-class OfflineError(Exception):
-    """Indicates that the system is offline."""
-
-
-class PacmanError(Exception):
-    """Indicates an error with pacman."""
-
-
-class UnknownError(Exception):
-    """Indicates an unknown error."""
+class RemoteProcessError(Exception):
+    """Error when executing processes on remote systems."""
 
     def __init__(self, completed_process: CompletedProcess):
         """Creates an exception from the given completed process."""
@@ -55,9 +48,25 @@ class UnknownError(Exception):
         return ' / '.join(items)
 
 
+class OfflineError(RemoteProcessError):
+    """Indicates that the system is offline."""
+
+
+class SystemIOError(RemoteProcessError):
+    """Indicates an I/O error on the remote system."""
+
+
+class PacmanError(RemoteProcessError):
+    """Indicates an error with pacman."""
+
+
+class UnknownError(RemoteProcessError):
+    """Indicates an unknown error."""
+
+
 BY_RETURNCODE = {
     255: OfflineError,
-    126: IOError,
+    126: SystemIOError,
     1: PacmanError
 }
 
@@ -72,4 +81,4 @@ def get_exception(completed_process: CompletedProcess) -> Exception:
     except KeyError:
         return UnknownError(completed_process)
 
-    return exception()
+    return exception(completed_process)
