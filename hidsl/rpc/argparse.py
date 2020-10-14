@@ -15,7 +15,7 @@ def get_args() -> Namespace:
                         help='systems to upgrade')
     parser.add_argument('-S', '--sysupgrade', action='store_true',
                         help='upgrade the systems')
-    parser.add_argument('-X', '--execute', nargs='+', metavar='command',
+    parser.add_argument('-X', '--execute', metavar='command',
                         help='execute the commands on the systems')
     parser.add_argument('-R', '--reboot', action='store_true',
                         help='reboot the systems')
