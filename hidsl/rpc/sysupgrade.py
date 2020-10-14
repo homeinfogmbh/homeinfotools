@@ -126,13 +126,13 @@ def sysupgrade(system: int, args: Namespace, job: DictProxy) -> bool:
         upgrade(system, args, job)
     except SystemIOError as error:
         LOGGER.error('I/O error: %i', system)
-        LOGGER.info('%s', error)
+        LOGGER.debug('%s', error)
     except PacmanError as error:
         LOGGER.error('Pacman error: %i', system)
-        LOGGER.info('%s', error)
+        LOGGER.debug('%s', error)
     except UnknownError as error:
         LOGGER.error('Unknown error: %i', system)
-        LOGGER.info('%s', error)
+        LOGGER.debug('%s', error)
     else:
         return True
 
