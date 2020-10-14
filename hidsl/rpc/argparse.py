@@ -15,7 +15,7 @@ def get_args() -> Namespace:
                         help='systems to upgrade')
     parser.add_argument('-S', '--sysupgrade', action='store_true',
                         help='upgrade the systems')
-    parser.add_argument('-X', '--execute', nargs='+',
+    parser.add_argument('-X', '--execute', nargs='+', metavar='command',
                         help='execute the commands on the systems')
     parser.add_argument('-R', '--reboot', action='store_true',
                         help='reboot the systems')
@@ -33,8 +33,8 @@ def get_args() -> Namespace:
                         help='cleanup unneeded packages after upgrade')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose logging')
-    parser.add_argument('-d', '--debuglevel', type=int, default=0,
-                        help='set debug level')
+    parser.add_argument('-d', '--debug', type=int, default=0,
+                        metavar='level', help='set debug level')
     parser.add_argument('-y', '--yes', action='store_true',
                         help='make pacman assume yes')
     parser.add_argument('-n', '--no-stdin', action='store_true',

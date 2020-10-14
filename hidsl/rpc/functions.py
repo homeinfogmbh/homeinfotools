@@ -76,10 +76,10 @@ def get_header(args: Namespace, *, comment: str = '#') -> Iterable[str]:
 def get_log_level(args: Namespace) -> int:
     """Returns the set logging level."""
 
-    if args.debuglevel > 0:
+    if args.debug > 0:
         return INFO
 
-    if args.debuglevel > 1:
+    if args.debug > 1:
         return DEBUG
 
     return WARNING if args.verbose else ERROR
