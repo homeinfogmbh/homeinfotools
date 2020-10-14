@@ -5,12 +5,12 @@ from multiprocessing.managers import DictProxy
 from subprocess import CompletedProcess
 
 from hidsl.logging import LOGGER
-from hidsl.update.common import PACMAN
-from hidsl.update.exceptions import OfflineError
-from hidsl.update.exceptions import PacmanError
-from hidsl.update.exceptions import SystemIOError
-from hidsl.update.exceptions import UnknownError
-from hidsl.update.functions import execute, ssh, sudo
+from hidsl.rpc.common import PACMAN
+from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.exceptions import PacmanError
+from hidsl.rpc.exceptions import SystemIOError
+from hidsl.rpc.exceptions import UnknownError
+from hidsl.rpc.functions import execute, ssh, sudo
 
 
 __all__ = ['sysupgrade']

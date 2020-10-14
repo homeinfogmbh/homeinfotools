@@ -3,12 +3,7 @@
 from subprocess import CompletedProcess
 
 
-__all__ = [
-    'OfflineError',
-    'SystemIOError',
-    'PacmanError',
-    'UnknownError'
-]
+__all__ = ['OfflineError', 'SystemIOError', 'PacmanError', 'UnknownError']
 
 
 class RemoteProcessError(Exception):

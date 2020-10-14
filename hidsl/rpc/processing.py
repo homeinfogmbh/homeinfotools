@@ -7,10 +7,10 @@ from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
 from hidsl.logging import LOGGER
-from hidsl.update.exceptions import OfflineError
-from hidsl.update.reboot import reboot
-from hidsl.update.runcmd import runcmd
-from hidsl.update.sysupgrade import sysupgrade
+from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.reboot import reboot
+from hidsl.rpc.runcmd import runcmd
+from hidsl.rpc.sysupgrade import sysupgrade
 
 
 __all__ = ['Worker']

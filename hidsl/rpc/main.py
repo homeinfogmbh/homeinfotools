@@ -6,11 +6,10 @@ from multiprocessing import Manager, Pool
 from os import getpid, linesep
 
 from hidsl.logging import LOG_FORMAT, LOGGER
-from hidsl.update.argparse import get_args
-from hidsl.update.dict_proxy import to_json
-from hidsl.update.functions import get_header
-from hidsl.update.functions import get_log_level
-from hidsl.update.processing import Worker
+from hidsl.rpc.argparse import get_args
+from hidsl.rpc.dict_proxy import to_json
+from hidsl.rpc.functions import get_header, get_log_level
+from hidsl.rpc.processing import Worker
 
 
 __all__ = ['main']

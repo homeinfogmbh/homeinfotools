@@ -7,7 +7,7 @@ from subprocess import DEVNULL, PIPE, run, CompletedProcess
 from sys import argv
 from typing import Iterable, List, Tuple, Union
 
-from hidsl.update.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
+from hidsl.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
 
 
 __all__ = ['get_header', 'get_log_level']

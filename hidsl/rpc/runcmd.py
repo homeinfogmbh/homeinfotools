@@ -4,8 +4,8 @@ from argparse import Namespace
 from multiprocessing.managers import DictProxy
 
 from hidsl.logging import LOGGER
-from hidsl.update.exceptions import OfflineError
-from hidsl.update.functions import execute, ssh
+from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.functions import execute, ssh
 
 
 __all__ = ['runcmd']
