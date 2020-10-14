@@ -36,9 +36,8 @@ class Worker(NamedTuple):
 
             if self.args.reboot and success:
                 success = reboot(system, self.args, job)
-        except OfflineError as error:
+        except OfflineError:
             LOGGER.error('System is offline: %i', system)
-            LOGGER.info('%s', error)
 
         job['success'] = success
         job['end'] = datetime.now()
