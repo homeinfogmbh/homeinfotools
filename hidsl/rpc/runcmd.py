@@ -25,10 +25,10 @@ def runcmd(system: int, args: Namespace, job: DictProxy) -> bool:
     LOGGER.debug('Command returned %i.', completed_process.returncode)
 
     if stdout := completed_process.stdout:
-        LOGGER.info('System %i: %s', system, stdout)
+        LOGGER.info('System %i: %s', system, stdout.strip())
 
     if stderr := completed_process.stderr:
-        LOGGER.warning('System %i: %s', system, stderr)
+        LOGGER.warning('System %i: %s', system, stderr.strip())
 
     if not success:
         LOGGER.error('Command failed on system %i.', system)
