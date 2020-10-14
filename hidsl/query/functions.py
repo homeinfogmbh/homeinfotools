@@ -11,7 +11,13 @@ from hidsl.logging import LOGGER
 from hidsl.termgr import SYSTEMS_URL
 
 
-__all__ = ['get_systems', 'filter_systems']
+__all__ = ['casefoldstr', 'get_systems', 'filter_systems']
+
+
+def casefoldstr(string: str) -> str:
+    """Returns a casefolded string."""
+
+    return string.casefold()
 
 
 def query_systems(account: str, passwd: str) -> list:
@@ -63,17 +69,23 @@ def systems_from_cache(args: Namespace) -> list:
 def get_systems(args: Namespace) -> list:
     """Returns systems."""
 
-    if args.no_caching or args.force:
+    if args.refresh:
         systems = query_systems(*update_credentials(args.user))
-
-    if args.no_caching:
-        return systems
-
-    if args.force:
         return cache_systems(systems, args)
 
     return systems_from_cache(args)
 
+
+def substr_ic_in(substring: str, haystack: Iterable[str]) -> bool:
+    """Checks whether the string is a substring of
+    any strings in the iterable, ignoring the case.
+    """
+
+    if not substring:
+        return False
+
+    substring = substring.casefold()
+    return any(substring in string for string in haystack)
 
 
 # pylint:disable=R0911,R0912
@@ -102,8 +114,9 @@ def match_system(system: dict, *, args: Namespace) -> bool:
         customer = deployment.get('customer') or {}
         company = customer.get('company') or {}
         match = str(customer['id']) in args.customer
-        match = match or company.get('name') in args.customer
-        match = match or company.get('abbreviation') in args.customer
+        match = match or substr_ic_in(company.get('name'), args.customer)
+        match = match or substr_ic_in(
+            company.get('abbreviation'), args.customer)
 
         if not match:
             return False
@@ -115,19 +128,19 @@ def match_system(system: dict, *, args: Namespace) -> bool:
     address = deployment.get('address') or {}
 
     if args.street is not None:
-        if address.get('street') not in args.street:
+        if substr_ic_in(address.get('street'), args.street):
             return False
 
     if args.house_number is not None:
-        if address.get('houseNumber') not in args.house_number:
+        if substr_ic_in(address.get('houseNumber'), args.house_number):
             return False
 
     if args.zip_code is not None:
-        if address.get('zipCode') not in args.zip_code:
+        if substr_ic_in(address.get('zipCode'), args.zip_code):
             return False
 
     if args.city is not None:
-        if address.get('city') not in args.city:
+        if substr_ic_in(address.get('city'), args.city):
             return False
 
     return True

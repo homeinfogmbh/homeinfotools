@@ -3,6 +3,8 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
+from hidsl.query.functions import casefoldstr
+
 
 __all__ = ['get_args']
 
@@ -24,26 +26,24 @@ def get_args() -> Namespace:
                         help='filter by serial numbers')
     parser.add_argument('-D', '--deployment', nargs='+', type=int,
                         metavar='deployment', help='filter by deployments')
-    parser.add_argument('-C', '--customer', nargs='+', metavar='customer',
-                        help='filter by customers')
+    parser.add_argument('-C', '--customer', nargs='+', type=casefoldstr,
+                        metavar='customer', help='filter by customers')
     parser.add_argument('-t', '--type', nargs='+', metavar='type',
                         help='filter by types')
-    parser.add_argument('-s', '--street', nargs='+', metavar='street',
-                        help='filter by streets')
-    parser.add_argument('-H', '--house-number', nargs='+',
+    parser.add_argument('-s', '--street', nargs='+', type=casefoldstr,
+                        metavar='street', help='filter by streets')
+    parser.add_argument('-H', '--house-number', nargs='+', type=casefoldstr,
                         metavar='house number', help='filter by house numbers')
-    parser.add_argument('-z', '--zip-code', nargs='+', metavar='zip code',
-                        help='filter by zip codes')
-    parser.add_argument('-c', '--city', nargs='+', metavar='city',
-                        help='filter by cities')
+    parser.add_argument('-z', '--zip-code', nargs='+', type=casefoldstr,
+                        metavar='zip code', help='filter by zip codes')
+    parser.add_argument('-c', '--city', nargs='+', type=casefoldstr,
+                        metavar='city', help='filter by cities')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose mode')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='enable debug mode')
-    parser.add_argument('-f', '--force', action='store_true',
+    parser.add_argument('-f', '--refresh', action='store_true',
                         help='force refreshing of cache')
-    parser.add_argument('-n', '--no-caching', action='store_true',
-                        help='do not cache systems')
     parser.add_argument('--cache-file', type=Path, default=CACHE_FILE,
                         metavar='file', help='use the given file as cache')
     parser.add_argument('--cache-time', type=int, default=24, metavar='hours',
