@@ -33,7 +33,7 @@ def json_values(dictionary: dict) -> Iterable[JSONTuple]:
         yield (key, value)
 
     if (duration := get_duration(dictionary)) is not None:
-        duration = duration.isoformat()
+        duration = str(duration)
 
     yield ('duration', duration)
 
