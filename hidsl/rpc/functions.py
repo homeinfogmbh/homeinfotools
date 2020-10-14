@@ -1,7 +1,7 @@
 """Common functions."""
 
 from argparse import Namespace
-from logging import DEBUG, ERROR, INFO, WARNING
+from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
 from typing import Iterable, List, Tuple, Union
 
@@ -50,10 +50,4 @@ def sudo(*command: str) -> Tuple[str]:
 def get_log_level(args: Namespace) -> int:
     """Returns the set logging level."""
 
-    if args.debug > 0:
-        return INFO
-
-    if args.debug > 1:
-        return DEBUG
-
-    return WARNING if args.verbose else ERROR
+    return DEBUG if args.debug else INFO if args.verbose else WARNING

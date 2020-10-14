@@ -21,8 +21,8 @@ def get_args() -> Namespace:
                         help='reboot the systems')
     parser.add_argument('-c', '--cleanup', action='store_true',
                         help='cleanup unneeded packages after upgrade')
-    parser.add_argument('-d', '--debug', type=int, default=0,
-                        metavar='level', help='set debug level')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='enable debug logging')
     parser.add_argument('-i', '--install', default=(), nargs='+',
                         metavar='pkg', help='install the given packages')
     parser.add_argument('-j', '--json', type=Path, metavar='file',
