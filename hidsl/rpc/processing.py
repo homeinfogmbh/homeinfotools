@@ -42,4 +42,3 @@ class Worker(NamedTuple):
 
         job['success'] = success
         job['end'] = datetime.now()
-        return (system, job)
