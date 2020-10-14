@@ -11,6 +11,6 @@ setup(
     maintainer_email='r.neumann@homeinfo.de',
     requires=['requests'],
     packages=['hidsl', 'hidsl.rpc', 'hidsl.vpn'],
-    scripts=['files/sysvpn', 'files/termrpc'],
+    scripts=['files/sysvpn', 'files/sysrpc'],
     description='HOMEINFO Digital Signage Linux configurator.'
 )
