@@ -18,7 +18,7 @@ def get_args() -> Namespace:
                         help='filter by operating systems')
     parser.add_argument('--sn', nargs='+', metavar='serial number',
                         help='filter by serial numbers')
-    parser.add_argument('-d', '--deployment', nargs='+', type=int,
+    parser.add_argument('-D', '--deployment', nargs='+', type=int,
                         metavar='deployment', help='filter by deployments')
     parser.add_argument('-C', '--customer', nargs='+', metavar='customer',
                         help='filter by customers')
@@ -32,4 +32,8 @@ def get_args() -> Namespace:
                         help='filter by zip codes')
     parser.add_argument('-c', '--city', nargs='+', metavar='city',
                         help='filter by cities')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='enable verbose mode')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='enable debug mode')
     return parser.parse_args()
