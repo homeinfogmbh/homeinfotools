@@ -7,8 +7,7 @@ __all__ = [
     'OfflineError',
     'SystemIOError',
     'PacmanError',
-    'UnknownError',
-    'get_exception'
+    'UnknownError'
 ]
 
 
@@ -52,23 +51,3 @@ class PacmanError(RemoteProcessError):
 
 class UnknownError(RemoteProcessError):
     """Indicates an unknown error."""
-
-
-BY_RETURNCODE = {
-    255: OfflineError,
-    126: SystemIOError,
-    1: PacmanError
-}
-
-
-def get_exception(completed_process: CompletedProcess) -> Exception:
-    """Raises an exception by the given
-    the success status and return code.
-    """
-
-    try:
-        exception = BY_RETURNCODE[completed_process.returncode]
-    except KeyError:
-        return UnknownError(completed_process)
-
-    return exception(completed_process)

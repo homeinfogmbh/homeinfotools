@@ -3,29 +3,14 @@
 from argparse import Namespace
 from datetime import datetime
 from logging import DEBUG, ERROR, INFO, WARNING
-from multiprocessing.managers import DictProxy
-from os import linesep
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
-from sys import argv, stderr
+from sys import argv
 from typing import Iterable, List, Tuple, Union
 
-from hidsl.logging import LOGGER
-from hidsl.update.common import HOSTNAME, PACMAN, SSH, SSH_OPTIONS, SUDO
-from hidsl.update.exceptions import OfflineError
-from hidsl.update.exceptions import SystemIOError
-from hidsl.update.exceptions import PacmanError
-from hidsl.update.exceptions import UnknownError
-from hidsl.update.exceptions import get_exception
-from hidsl.update.namespace import get_success, get_pending, to_csv
+from hidsl.update.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
 
 
-__all__ = [
-    'get_header',
-    'get_log_level',
-    'upgrade',
-    'print_finished',
-    'print_pending'
-]
+__all__ = ['get_header', 'get_log_level']
 
 
 RED = '\\e[31m{}\\e[0m'
@@ -98,140 +83,3 @@ def get_log_level(args: Namespace) -> int:
         return DEBUG
 
     return WARNING if args.verbose else ERROR
-
-
-def _upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
-    """Upgrades the archlinux-keyring on that system."""
-
-    command = [PACMAN, '-Sy', 'archlinux-keyring', '--needed', '--noconfirm']
-
-    if not args.timeout:
-        command.append('--disable-download-timeout')
-
-    command = sudo(*command)
-    command = ssh(system, *command, no_stdin=args.no_stdin)
-    LOGGER.debug('Executing command: %s', command)
-    return execute(command)
-
-
-def _upgrade_system(system: int, args: Namespace) -> CompletedProcess:
-    """Upgrades the system."""
-
-    command = [PACMAN, '-Syu', '--needed']
-
-    for package in args.package:
-        command.append(package)
-
-    for glob in args.overwrite:
-        command.append('--overwrite')
-        command.append(glob)
-
-    if not args.timeout:
-        command.append('--disable-download-timeout')
-
-    if args.yes:
-        command = 'yes | ' + ' '.join(sudo(*command))
-        command = ssh(system, command, no_stdin=args.no_stdin)
-    else:
-        command.append('--noconfirm')
-        command = sudo(*command)
-        command = ssh(system, *command, no_stdin=args.no_stdin)
-
-    LOGGER.debug('Executing command: %s', command)
-    return execute(command)
-
-
-def _cleanup_system(system: int, args: Namespace) -> CompletedProcess:
-    """Cleans up the system."""
-
-    command = [PACMAN, '-Rncs', '$(pacman -Qmq)', '$(pacman -Qdtq)']
-
-    if args.yes:
-        command = 'yes | ' + ' '.join(sudo(*command))
-        command = ssh(system, command, no_stdin=args.no_stdin)
-    else:
-        command.append('--noconfirm')
-        command = sudo(*command)
-        command = ssh(system, *command, no_stdin=args.no_stdin)
-
-    LOGGER.debug('Executing command: %s', command)
-    return execute(command)
-
-
-def _upgrade(system: int, args: Namespace, job: DictProxy):
-    """Upgrade process function."""
-
-    LOGGER.info('Upgrading system: %i', system)
-
-    if args.keyring:
-        completed_process = _upgrade_keyring(system, args=args)
-        job.keyring = success = completed_process.returncode == 0
-
-        if not success:
-            LOGGER.warning('Could not update keyring: %i', system)
-            raise get_exception(completed_process)
-
-    completed_process = _upgrade_system(system, args=args)
-    job.sysupgrade = success = completed_process.returncode == 0
-
-    if not success:
-        LOGGER.warning('Could not upgrade system: %i', system)
-        raise get_exception(completed_process)
-
-    if args.cleanup:
-        completed_process = _cleanup_system(system, args=args)
-        job.cleanup = success = completed_process.returncode in {0, 1}
-
-        if not success:
-            LOGGER.warning('Could not clean up system: %i', system)
-            raise get_exception(completed_process)
-
-
-def upgrade(system: int, args: Namespace, jobs: DictProxy):
-    """Upgrated the respective system."""
-
-    jobs[system].started = datetime.now()
-
-    try:
-        _upgrade(system, args, jobs[system])
-    except OfflineError as error:
-        LOGGER.error('System is offline: %i', system)
-        LOGGER.info('%s', error)
-    except SystemIOError as error:
-        LOGGER.error('I/O error: %i', system)
-        LOGGER.info('%s', error)
-    except PacmanError as error:
-        LOGGER.error('Pacman error: %i', system)
-        LOGGER.info('%s', error)
-    except UnknownError as error:
-        LOGGER.error('Unknown error: %i', system)
-        LOGGER.info('%s', error)
-
-    jobs[system].finished = datetime.now()
-
-    if args.logfile is not None:
-        with args.logfile.open('a') as logfile:
-            logfile.write(f'{system},' + to_csv(jobs[system]) + linesep)
-
-
-def print_finished(jobs: DictProxy, systems: List[int]):
-    """Prints pending jobs."""
-
-    finished = []
-
-    for system in systems:
-        if not get_pending(namespace := jobs[system]):
-            if get_success(namespace):
-                finished.append(str(system))
-            else:
-                finished.append(RED.format(system))
-
-    print('Finished:', ', '.join(finished), file=stderr)
-
-
-def print_pending(jobs: DictProxy, systems: List[int]):
-    """Prints pending jobs."""
-
-    pending = (system for system in systems if get_pending(jobs[system]))
-    text = ', '.join(str(system) for system in pending)
-    print('Pending:', text, file=stderr)

@@ -13,12 +13,18 @@ def get_args() -> Namespace:
     parser = ArgumentParser(description='Batch upgrade systems.')
     parser.add_argument('system', type=int, nargs='+',
                         help='systems to upgrade')
-    parser.add_argument('-P', '--processes', type=int, metavar='n',
+    parser.add_argument('-S', '--sysupgrade', action='store_true',
+                        help='upgrade the systems')
+    parser.add_argument('-X', '--execute', nargs='+',
+                        help='execute the commands on the systems')
+    parser.add_argument('-R', '--reboot', action='store_true',
+                        help='reboot the systems')
+    parser.add_argument('-p', '--processes', type=int, metavar='n',
                         help='amount pf parallel processes')
     parser.add_argument('-t', '--timeout', action='store_true',
                         help='enables pacman download timeouts')
-    parser.add_argument('-p', '--package', default=(), nargs='+',
-                        metavar='pkg', help='packages to explicitely upgrade')
+    parser.add_argument('-i', '--install', default=(), nargs='+',
+                        metavar='pkg', help='install the given packages')
     parser.add_argument('-o', '--overwrite', default=(), nargs='+',
                         metavar='glob', help='globs of files to overwrite')
     parser.add_argument('-k', '--keyring', action='store_true',

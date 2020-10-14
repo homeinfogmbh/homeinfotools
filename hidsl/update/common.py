@@ -3,7 +3,7 @@
 from os import name
 
 
-__all__ = ['HOSTNAME', 'PACMAN', 'SUDO', 'SSH', 'SSH_OPTIONS']
+__all__ = ['HOSTNAME', 'PACMAN', 'SUDO', 'SSH', 'SSH_OPTIONS', 'SYSTEMCTL']
 
 
 HOSTNAME = '{}.terminals.homeinfo.intra'
@@ -21,3 +21,4 @@ SSH_OPTIONS = (
     'StrictHostKeyChecking=no', 'ConnectTimeout=5'
 )
 SUDO = '/usr/bin/sudo'
+SYSTEMCTL = '/usr/bin/systemctl'
