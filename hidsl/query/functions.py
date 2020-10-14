@@ -35,14 +35,15 @@ def cache_systems(systems: list, args: Namespace) -> list:
 def systems_from_cache(args: Namespace) -> list:
     """Returns cached systems."""
 
-    if args.cache_file.exists():
-        LOGGER.debug('Loading cache.')
+    if not args.cache_file.exists():
+        LOGGER.info('Initializing cache.')
+        systems = query_systems(*update_credentials(args.user))
+        return cache_systems(systems, args)
 
-        with args.cache_file.open('r') as file:
-            cache = load(file)
-    else:
-        LOGGER.debug('Cache does not exist.')
-        cache = {}
+    LOGGER.debug('Loading cache.')
+
+    with args.cache_file.open('r') as file:
+        cache = load(file)
 
     if timestamp := cache.get('timestamp'):
         timestamp = datetime.fromisoformat(timestamp)
@@ -51,6 +52,8 @@ def systems_from_cache(args: Namespace) -> list:
             return cache['systems']
 
         LOGGER.info('Cache has expired.')
+    else:
+        LOGGER.warning('Corrupted cache.')
 
     return cache_systems(query_systems(*update_credentials(args.user)), args)
 
