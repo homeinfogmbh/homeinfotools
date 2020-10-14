@@ -3,9 +3,8 @@
 from json import dump
 from logging import basicConfig
 from multiprocessing import Manager, Pool
-from os import getpid
 
-from hidsl.logging import LOG_FORMAT, LOGGER
+from hidsl.logging import LOG_FORMAT
 from hidsl.rpc.argparse import get_args
 from hidsl.rpc.json import to_json
 from hidsl.rpc.functions import get_log_level
@@ -21,7 +20,6 @@ def run(manager: Manager):
     args = get_args()
     loglevel = get_log_level(args)
     basicConfig(format=LOG_FORMAT, level=loglevel)
-    LOGGER.info('PID: %s', getpid())
     worker = Worker(args, manager)
     jobs = {}
 
