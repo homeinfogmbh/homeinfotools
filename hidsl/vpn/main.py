@@ -1,12 +1,12 @@
 """OpenVPN configuration package client."""
 
 from logging import DEBUG, INFO, basicConfig
-from sys import exit, stdout    # pylint: disable=W0622
+from sys import stdout
 
-from hidsl.logging import LOG_FORMAT, LOGGER
+from hidsl.his import update_credentials, ErrorHandler
+from hidsl.logging import LOG_FORMAT
 from hidsl.vpn.argparse import get_args
-from hidsl.vpn.exceptions import DownloadError, LoginError
-from hidsl.vpn.functions import read_credentials, get_vpn_data
+from hidsl.vpn.functions import get_vpn_data
 
 
 __all__ = ['main']
@@ -17,18 +17,10 @@ def main():
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
-    user, passwd = read_credentials(args.user)
+    user, passwd = update_credentials(args.user)
 
-    try:
+    with ErrorHandler('Error during VPN data retrieval.'):
         tar_file = get_vpn_data(user, passwd, args.system, args.windows)
-    except LoginError as error:
-        LOGGER.error('Error during login.')
-        LOGGER.debug(error)
-        exit(2)
-    except DownloadError as error:
-        LOGGER.error('Error during VPN data retrieval.')
-        LOGGER.debug(error)
-        exit(3)
 
     if args.file is None:
         stdout.buffer.write(tar_file)
