@@ -59,8 +59,8 @@ def match_system(system: dict, *, args: Namespace) -> bool:
         if address.get('street') not in args.street:
             return False
 
-    if args.houseno is not None:
-        if address.get('houseNumber') not in args.houseno:
+    if args.house_number is not None:
+        if address.get('houseNumber') not in args.house_number:
             return False
 
     if args.zip_code is not None:
