@@ -23,11 +23,6 @@ def run(manager: Manager):
     basicConfig(format=LOG_FORMAT, level=loglevel)
     LOGGER.info('PID: %s', getpid())
 
-    # Initialize log file.
-    if args.logfile is not None:
-        with args.logfile.open('w') as logfile:
-            logfile.writelines(linesep.join(get_header(args)) + linesep)
-
     with Pool(processes=args.processes) as pool:
         results = pool.imap_unordered(Worker(args, manager), args.system)
 
