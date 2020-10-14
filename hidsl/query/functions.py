@@ -92,25 +92,25 @@ def substr_ic_in(substring: str, haystack: Iterable[str]) -> bool:
 def match_system(system: dict, *, args: Namespace) -> bool:
     """Matches the system to the filters."""
 
-    if args.id is not None:
+    if args.id:
         if system.get('id') not in args.id:
             return False
 
-    if args.os is not None:
+    if args.os:
         if system.get('operatingSystem') not in args.os:
             return False
 
-    if args.sn is not None:
+    if args.sn:
         if system.get('serialNumber') not in args.sn:
             return False
 
     deployment = system.get('deployment') or {}
 
-    if args.deployment is not None:
+    if args.deployment:
         if deployment.get('id') not in args.deployment:
             return False
 
-    if args.customer is not None:
+    if args.customer:
         customer = deployment.get('customer') or {}
         company = customer.get('company') or {}
         match = str(customer['id']) in args.customer
@@ -121,25 +121,25 @@ def match_system(system: dict, *, args: Namespace) -> bool:
         if not match:
             return False
 
-    if args.type is not None:
+    if args.type:
         if deployment.get('type') not in args.type:
             return False
 
     address = deployment.get('address') or {}
 
-    if args.street is not None:
+    if args.street:
         if substr_ic_in(address.get('street'), args.street):
             return False
 
-    if args.house_number is not None:
+    if args.house_number:
         if substr_ic_in(address.get('houseNumber'), args.house_number):
             return False
 
-    if args.zip_code is not None:
+    if args.zip_code:
         if substr_ic_in(address.get('zipCode'), args.zip_code):
             return False
 
-    if args.city is not None:
+    if args.city:
         if substr_ic_in(address.get('city'), args.city):
             return False
 
