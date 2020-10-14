@@ -1,20 +1,74 @@
 """Query systems."""
 
 from argparse import Namespace
+from datetime import datetime, timedelta
 from functools import partial
+from json import dump, load
+from typing import Iterable
 
-from hidsl.his import HISSession
+from hidsl.his import update_credentials, HISSession
+from hidsl.logging import LOGGER
 from hidsl.termgr import SYSTEMS_URL
 
 
 __all__ = ['get_systems', 'filter_systems']
 
 
-def get_systems(account: str, passwd: str):
+def query_systems(account: str, passwd: str) -> list:
     """Query systems."""
 
     with HISSession(account, passwd) as session:
         return session.get_json(SYSTEMS_URL)
+
+
+def cache_systems(systems: list, args: Namespace) -> list:
+    """Caches the systems and returns them."""
+
+    cache = {'timestamp': datetime.now().isoformat(), 'systems': systems}
+
+    with args.cache_file.open('w') as file:
+        dump(cache, file)
+
+    return systems
+
+
+def systems_from_cache(args: Namespace) -> list:
+    """Returns cached systems."""
+
+    if args.cache_file.exists():
+        LOGGER.debug('Loading cache.')
+
+        with args.cache_file.open('r') as file:
+            cache = load(file)
+    else:
+        LOGGER.debug('Cache does not exist.')
+        cache = {}
+
+    if timestamp := cache.get('timestamp'):
+        timestamp = datetime.fromisoformat(timestamp)
+
+        if timestamp + timedelta(hours=args.cache_time) > datetime.now():
+            return cache['systems']
+
+        LOGGER.info('Cache has expired.')
+
+    return cache_systems(query_systems(*update_credentials(args.user)), args)
+
+
+def get_systems(args: Namespace) -> list:
+    """Returns systems."""
+
+    if args.no_caching or args.force:
+        systems = query_systems(*update_credentials(args.user))
+
+    if args.no_caching:
+        return systems
+
+    if args.force:
+        return cache_systems(systems, args)
+
+    return systems_from_cache(args)
+
 
 
 # pylint:disable=R0911,R0912
@@ -74,7 +128,7 @@ def match_system(system: dict, *, args: Namespace) -> bool:
     return True
 
 
-def filter_systems(systems: list, args: Namespace):
+def filter_systems(systems: list, args: Namespace) -> Iterable[dict]:
     """Filter systems according to the args."""
 
     return filter(partial(match_system, args=args), systems)
