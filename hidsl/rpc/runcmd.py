@@ -17,7 +17,7 @@ def runcmd(system: int, args: Namespace, job: DictProxy) -> bool:
     command = ssh(system, args.execute, no_stdin=args.no_stdin)
     LOGGER.debug('Running "%s" on system %i.', args.execute, system)
     completed_process = execute(command)
-    job[args.execute] = success = completed_process.returncode == 0
+    job['command'] = completed_process.returncode
 
     if completed_process.returncode == 255:
         raise OfflineError(completed_process)
@@ -30,7 +30,7 @@ def runcmd(system: int, args: Namespace, job: DictProxy) -> bool:
     if stderr := completed_process.stderr:
         LOGGER.warning('System %i: %s', system, stderr.strip())
 
-    if not success:
+    if not (success := completed_process.returncode == 0):
         LOGGER.error('Command failed on system %i.', system)
 
     return success

@@ -97,24 +97,24 @@ def upgrade(system: int, args: Namespace, job: DictProxy):
 
     if args.keyring:
         completed_process = upgrade_keyring(system, args=args)
-        job['keyring'] = success = completed_process.returncode == 0
+        job['keyring'] = completed_process.returncode
 
-        if not success:
+        if completed_process.returncode != 0:
             LOGGER.warning('Could not update keyring: %i', system)
             raise get_exception(completed_process)
 
     completed_process = upgrade_system(system, args=args)
-    job['sysupgrade'] = success = completed_process.returncode == 0
+    job['sysupgrade'] = completed_process.returncode
 
-    if not success:
+    if completed_process.returncode != 0:
         LOGGER.warning('Could not upgrade system: %i', system)
         raise get_exception(completed_process)
 
     if args.cleanup:
         completed_process = cleanup_system(system, args=args)
-        job['pkgcleanup'] = success = completed_process.returncode in {0, 1}
+        job['pkgcleanup'] = completed_process.returncode
 
-        if not success:
+        if completed_process.returncode not in {0, 1}:
             LOGGER.warning('Could not clean up system: %i', system)
             raise get_exception(completed_process)
 
