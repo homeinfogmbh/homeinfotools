@@ -107,7 +107,7 @@ class HISSession:
         if response.status_code != 200:
             raise DownloadError(response)
 
-        return response.json
+        return response.json()
 
 
 class ErrorHandler:
