@@ -17,6 +17,8 @@ __all__ = ['get_systems', 'filter_systems']
 def query_systems(account: str, passwd: str) -> list:
     """Query systems."""
 
+    LOGGER.debug('Querying systems.')
+
     with HISSession(account, passwd) as session:
         return session.get_json(SYSTEMS_URL)
 
