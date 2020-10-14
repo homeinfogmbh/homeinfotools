@@ -1,6 +1,5 @@
 """Terminal backtch updating utility."""
 
-from argparse import Namespace
 from json import dump
 from logging import basicConfig
 from multiprocessing import Manager, Pool
@@ -15,10 +14,12 @@ from hidsl.rpc.processing import Worker
 __all__ = ['main']
 
 
-def run(args: Namespace, manager: Manager):
+def run(manager: Manager):
     """Runs the program with a manager."""
 
-    jobs = {system: manager.dict() for system in args.systems}
+    args = get_args()
+    basicConfig(format=LOG_FORMAT, level=get_log_level(args))
+    jobs = {system: manager.dict() for system in args.system}
     worker = Worker(args, jobs)
 
     with Pool(processes=args.processes) as pool:
@@ -34,8 +35,6 @@ def run(args: Namespace, manager: Manager):
 def main():
     """Runs the script."""
 
-    args = get_args()
-    basicConfig(format=LOG_FORMAT, level=get_log_level(args))
 
     with Manager() as manager:
-        run(args, manager)
+        run(manager)
