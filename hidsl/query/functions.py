@@ -76,16 +76,16 @@ def get_systems(args: Namespace) -> list:
     return systems_from_cache(args)
 
 
-def substr_ic_in(substring: str, haystack: Iterable[str]) -> bool:
+def substr_ic_in(string: str, haystack: Iterable[str]) -> bool:
     """Checks whether the string is a substring of
     any strings in the iterable, ignoring the case.
     """
 
-    if not substring:
+    if not string:
         return False
 
-    substring = substring.casefold()
-    return any(substring in string for string in haystack)
+    string = string.casefold()
+    return any(substring in string for substring in haystack)
 
 
 # pylint:disable=R0911,R0912
