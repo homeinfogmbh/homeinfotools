@@ -34,9 +34,7 @@ def get_args() -> Namespace:
     parser.add_argument('-o', '--overwrite', default=(), nargs='+',
                         metavar='glob', help='globs of files to overwrite')
     parser.add_argument('-p', '--processes', type=int, metavar='n',
-                        help='amount pf parallel processes')
-    parser.add_argument('-t', '--timeout', action='store_true',
-                        help='enables pacman download timeouts')
+                        help='amount of parallel processes')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose logging')
     parser.add_argument('-y', '--yes', action='store_true',

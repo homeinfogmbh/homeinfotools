@@ -39,11 +39,10 @@ def get_exception(completed_process: CompletedProcess) -> Exception:
 def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the archlinux-keyring on that system."""
 
-    command = [PACMAN, '-Sy', 'archlinux-keyring', '--needed', '--noconfirm']
-
-    if not args.timeout:
-        command.append('--disable-download-timeout')
-
+    command = [
+        PACMAN, '-Sy', 'archlinux-keyring', '--needed', '--noconfirm',
+        '--disable-download-timeout'
+    ]
     command = sudo(*command)
     command = ssh(system, *command, no_stdin=args.no_stdin)
     LOGGER.debug('Executing command: %s', command)
@@ -53,7 +52,7 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
 def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the system."""
 
-    command = [PACMAN, '-Syu', '--needed']
+    command = [PACMAN, '-Syu', '--needed', '--disable-download-timeout']
 
     for package in args.install:
         command.append(package)
@@ -61,9 +60,6 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     for glob in args.overwrite:
         command.append('--overwrite')
         command.append(glob)
-
-    if not args.timeout:
-        command.append('--disable-download-timeout')
 
     if args.yes:
         command = 'yes | ' + ' '.join(sudo(*command))
