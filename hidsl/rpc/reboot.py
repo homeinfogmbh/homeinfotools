@@ -15,7 +15,7 @@ __all__ = ['reboot']
 def reboot(system: int, args: Namespace, job: NamespaceProxy) -> bool:
     """Reboots a system."""
 
-    command = ssh(system, sudo(SYSTEMCTL, 'reboot'), no_stdin=args.no_stdin)
+    command = ssh(system, *sudo(SYSTEMCTL, 'reboot'), no_stdin=args.no_stdin)
     completed_process = execute(command)
     job['reboot'] = completed_process.returncode
 
