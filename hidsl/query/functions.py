@@ -128,19 +128,19 @@ def match_system(system: dict, *, args: Namespace) -> bool:
     address = deployment.get('address') or {}
 
     if args.street:
-        if substr_ic_in(address.get('street'), args.street):
+        if not substr_ic_in(address.get('street'), args.street):
             return False
 
     if args.house_number:
-        if substr_ic_in(address.get('houseNumber'), args.house_number):
+        if not substr_ic_in(address.get('houseNumber'), args.house_number):
             return False
 
     if args.zip_code:
-        if substr_ic_in(address.get('zipCode'), args.zip_code):
+        if not substr_ic_in(address.get('zipCode'), args.zip_code):
             return False
 
     if args.city:
-        if substr_ic_in(address.get('city'), args.city):
+        if not substr_ic_in(address.get('city'), args.city):
             return False
 
     return True
