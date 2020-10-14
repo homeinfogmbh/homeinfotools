@@ -3,12 +3,12 @@
 from json import dump
 from logging import basicConfig
 from multiprocessing import Manager, Pool
-from os import getpid, linesep
+from os import getpid
 
 from hidsl.logging import LOG_FORMAT, LOGGER
 from hidsl.rpc.argparse import get_args
 from hidsl.rpc.dict_proxy import to_json
-from hidsl.rpc.functions import get_header, get_log_level
+from hidsl.rpc.functions import get_log_level
 from hidsl.rpc.processing import Worker
 
 
