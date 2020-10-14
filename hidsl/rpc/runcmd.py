@@ -14,10 +14,10 @@ __all__ = ['runcmd']
 def runcmd(system: int, args: Namespace, job: DictProxy) -> bool:
     """Runs commands on a remote system."""
 
-    command = ssh(system, args.command, no_stdin=args.no_stdin)
-    LOGGER.debug('Running "%s" on system %i.', args.command, system)
+    command = ssh(system, args.execute, no_stdin=args.no_stdin)
+    LOGGER.debug('Running "%s" on system %i.', args.execute, system)
     completed_process = execute(command)
-    job[args.command] = success = completed_process.returncode == 0
+    job[args.execute] = success = completed_process.returncode == 0
 
     if completed_process.returncode == 255:
         raise OfflineError(completed_process)
