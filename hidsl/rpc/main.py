@@ -23,7 +23,7 @@ def run(manager: Manager):
     worker = Worker(args, jobs)
 
     with Pool(processes=args.processes) as pool:
-        pool.imap_unordered(worker, args.system)
+        pool.map(worker, args.system)
 
     if args.json is not None:
         json = {system: to_json(job) for system, job in jobs.items()}

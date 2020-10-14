@@ -28,13 +28,13 @@ class Worker(NamedTuple):
         success = True
 
         try:
-            if self.args.sysupgrade and (self.args.force or success):
+            if self.args.sysupgrade:
                 success = sysupgrade(system, self.args, job)
 
-            if self.args.execute and (self.args.force or success):
+            if self.args.execute and success:
                 success = runcmd(system, self.args, job)
 
-            if self.args.reboot and (self.args.force or success):
+            if self.args.reboot and success:
                 success = reboot(system, self.args, job)
         except OfflineError as error:
             LOGGER.error('System is offline: %i', system)
