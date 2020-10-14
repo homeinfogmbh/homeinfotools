@@ -15,14 +15,14 @@ from hidsl.rpc.processing import Worker
 __all__ = ['main']
 
 
-def run(args: Namespace, worker: Worker):
+def run(args: Namespace, manager: Manager):
     """Runs the program with a manager."""
 
-    jobs = {}
+    jobs = {system: manager.dict() for system in args.systems}
+    worker = Worker(args, jobs)
 
     with Pool(processes=args.processes) as pool:
-        for system, job in pool.imap_unordered(worker, args.system):
-            jobs[system] = dict(job)
+        pool.imap_unordered(worker, args.system)
 
     if args.json is not None:
         json = {system: to_json(job) for system, job in jobs.items()}
@@ -38,4 +38,4 @@ def main():
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
 
     with Manager() as manager:
-        run(args, Worker(args, manager))
+        run(args, manager)

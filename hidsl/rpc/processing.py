@@ -2,7 +2,6 @@
 
 from argparse import Namespace
 from datetime import datetime
-from multiprocessing import Manager
 from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
@@ -20,11 +19,11 @@ class Worker(NamedTuple):
     """Stored args and manager to process systems."""
 
     args: Namespace
-    manager: Manager
+    jobs: DictProxy
 
     def __call__(self, system: int) -> Tuple[int, DictProxy]:
         """Runs the worker on the given system."""
-        job = self.manager.dict()
+        job = self.jobs[system]
         job['start'] = datetime.now()
         success = True
 
