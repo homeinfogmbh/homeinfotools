@@ -1,6 +1,6 @@
 """Argument parsing."""
 
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 
 from homeinfotools.os import CACHE_DIR
@@ -16,7 +16,8 @@ CACHE_FILE = CACHE_DIR.joinpath('sysquery.cache')
 def get_args() -> Namespace:
     """Returns parsed CLI arguments."""
 
-    parser = ArgumentParser(description='Retrieve and filter systems.')
+    parser = ArgumentParser(description='Retrieve and filter systems.',
+                            formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('-U', '--user', metavar='account',
                         help='the HIS user account')
     parser.add_argument('-i', '--id', nargs='+', type=int, metavar='id',

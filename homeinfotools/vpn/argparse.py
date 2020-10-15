@@ -1,6 +1,6 @@
 """Argument parsing."""
 
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 
 
@@ -10,7 +10,8 @@ __all__ = ['get_args']
 def get_args() -> Namespace:
     """Parses the command line arguments."""
 
-    parser = ArgumentParser(description='OpenVPN configuration retrieval.')
+    parser = ArgumentParser(description='OpenVPN configuration retrieval.',
+                            formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('-u', '--user', help='HIS user name')
     parser.add_argument('-w', '--windows', action='store_true',
                         help='package for MS Windows systems')
