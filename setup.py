@@ -4,7 +4,7 @@ from setuptools import setup
 
 
 setup(
-    name='hidsl-scripts',
+    name='hidsl',
     version_format='{tag}',
     setup_requires=['setuptools-git-version'],
     author='HOMEINFO - Digitale Informationssysteme GmbH',
