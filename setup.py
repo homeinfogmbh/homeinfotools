@@ -1,13 +1,14 @@
 #! /usr/bin/env python3
 
-#from os import name
+from os import name
 from pathlib import Path
 from setuptools import setup
 
 
 SCRIPTS = Path('scripts').iterdir()
-#if os.name == 'nt':
-#    SCRIPTS = [f'{script}.py' for script in SCRIPTS]
+
+if os.name == 'nt':
+    SCRIPTS = [script.rename(f'{script}.py') for script in SCRIPTS]
 
 
 setup(
