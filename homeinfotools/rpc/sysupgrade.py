@@ -1,7 +1,6 @@
 """System upgrade."""
 
 from argparse import Namespace
-from multiprocessing.managers import DictProxy
 from subprocess import CompletedProcess
 
 from homeinfotools.logging import LOGGER
@@ -10,7 +9,10 @@ from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.exceptions import PacmanError
 from homeinfotools.rpc.exceptions import SystemIOError
 from homeinfotools.rpc.exceptions import UnknownError
-from homeinfotools.rpc.functions import execute, ssh, sudo
+from homeinfotools.rpc.functions import completed_process_to_json
+from homeinfotools.rpc.functions import execute
+from homeinfotools.rpc.functions import ssh
+from homeinfotools.rpc.functions import sudo
 
 
 __all__ = ['sysupgrade']
@@ -88,21 +90,22 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     return execute(command)
 
 
-def upgrade(system: int, args: Namespace, job: DictProxy):
+def upgrade(system: int, args: Namespace):
     """Upgrade process function."""
 
     LOGGER.info('Upgrading system: %i', system)
+    result = {}
 
     if args.keyring:
         completed_process = upgrade_keyring(system, args=args)
-        job['keyring'] = completed_process.returncode
+        result['keyring'] = completed_process_to_json(completed_process)
 
         if completed_process.returncode != 0:
             warn_and_raise(f'Could not update keyring: {system}',
                            completed_process)
 
     completed_process = upgrade_system(system, args=args)
-    job['sysupgrade'] = completed_process.returncode
+    result['sysupgrade'] = completed_process_to_json(completed_process)
 
     if completed_process.returncode != 0:
         warn_and_raise(f'Could not upgrade system: {system}',
@@ -110,28 +113,29 @@ def upgrade(system: int, args: Namespace, job: DictProxy):
 
     if args.cleanup:
         completed_process = cleanup_system(system, args=args)
-        job['pkgcleanup'] = completed_process.returncode
+        result['pkgcleanup'] = completed_process_to_json(completed_process)
 
         if completed_process.returncode not in {0, 1}:
             warn_and_raise(f'Could not clean up system: {system}',
                            completed_process)
 
+    return result
 
-def sysupgrade(system: int, args: Namespace, job: DictProxy) -> bool:
+
+def sysupgrade(system: int, args: Namespace) -> bool:
     """Upgrated the respective system."""
 
     try:
-        upgrade(system, args, job)
+        return upgrade(system, args)
     except SystemIOError as error:
         LOGGER.error('I/O error: %i', system)
         LOGGER.debug('%s', error)
+        return completed_process_to_json(error.completed_process)
     except PacmanError as error:
         LOGGER.error('Pacman error: %i', system)
         LOGGER.debug('%s', error)
+        return completed_process_to_json(error.completed_process)
     except UnknownError as error:
         LOGGER.error('Unknown error: %i', system)
         LOGGER.debug('%s', error)
-    else:
-        return True
-
-    return False
+        return completed_process_to_json(error.completed_process)

@@ -8,10 +8,27 @@ from typing import Iterable, List, Tuple, Union
 from homeinfotools.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
 
 
-__all__ = ['execute', 'ssh', 'sudo', 'get_log_level']
+__all__ = [
+    'completed_process_to_json',
+    'execute',
+    'ssh',
+    'sudo',
+    'get_log_level'
+]
 
 
 RED = '\\e[31m{}\\e[0m'
+
+
+def completed_process_to_json(completed_process: CompletedProcess) -> dict:
+    """Converts a completed process into a JSON-ish dict."""
+
+    return {
+        'args': completed_process.args,
+        'returncode': completed_process.returncode,
+        'stdout': completed_process.stdout,
+        'stderr': completed_process.stderr,
+    }
 
 
 def execute(command: Union[Iterable[str], str]) -> CompletedProcess:
