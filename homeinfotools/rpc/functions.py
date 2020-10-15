@@ -28,7 +28,7 @@ def completed_process_to_json(completed_process: CompletedProcess) -> dict:
     }
 
 
-def execute(command: Union[Iterable[str], str]) -> CompletedProcess:
+def execute(command: Union[str, Iterable[str]]) -> CompletedProcess:
     """Executes the given command."""
 
     return run(command, stdin=DEVNULL, stdout=PIPE, stderr=PIPE, text=True,
