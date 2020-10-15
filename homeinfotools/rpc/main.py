@@ -23,7 +23,5 @@ def main():
         result = pool.map(Worker(args), args.system)
 
     if args.json is not None:
-        json = dict(result)
-
         with args.json.open('w') as file:
-            dump(json, file, indent=2)
+            dump(dict(result), file, indent=2)
