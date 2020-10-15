@@ -5,7 +5,7 @@ from multiprocessing.managers import NamespaceProxy
 
 from hidsl.logging import LOGGER
 from hidsl.rpc.common import SYSTEMCTL
-from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.exceptions import SSHConnectionError
 from hidsl.rpc.functions import execute, ssh, sudo
 
 
@@ -29,6 +29,6 @@ def reboot(system: int, args: Namespace, job: NamespaceProxy) -> bool:
         return True
 
     if completed_process.returncode == 255:
-        raise OfflineError(completed_process)
+        raise SSHConnectionError(completed_process)
 
     return False

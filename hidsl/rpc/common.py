@@ -1,21 +1,20 @@
 """Common constants."""
 
-from os import name
+from hidsl.os import SSH
 
 
-__all__ = ['HOSTNAME', 'PACMAN', 'SUDO', 'SSH', 'SSH_OPTIONS', 'SYSTEMCTL']
+__all__ = [
+    'HOSTNAME',
+    'PACMAN',
+    'SUDO',
+    'SSH',
+    'SSH_OPTIONS',
+    'SYSTEMCTL'
+]
 
 
 HOSTNAME = '{}.terminals.homeinfo.intra'
 PACMAN = '/usr/bin/pacman'
-
-if name == 'posix':
-    SSH = '/usr/bin/ssh'
-elif name == 'nt':
-    SSH = '/usr/bin/ssh'
-else:
-    raise OSError('Unsupported operating system.')
-
 SSH_OPTIONS = (
     'LogLevel=error', 'UserKnownHostsFile=/dev/null',
     'StrictHostKeyChecking=no', 'ConnectTimeout=5'

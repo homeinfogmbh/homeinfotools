@@ -3,13 +3,14 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
+from hidsl.os import CACHE_DIR
 from hidsl.query.functions import casefoldstr
 
 
 __all__ = ['get_args']
 
 
-CACHE_FILE = Path.home().joinpath('.sysquery.cache')
+CACHE_FILE = CACHE_DIR.joinpath('sysquery.cache')
 
 
 def get_args() -> Namespace:

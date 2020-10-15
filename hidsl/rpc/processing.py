@@ -6,7 +6,7 @@ from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
 from hidsl.logging import LOGGER
-from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.exceptions import SSHConnectionError
 from hidsl.rpc.reboot import reboot
 from hidsl.rpc.runcmd import runcmd
 from hidsl.rpc.sysupgrade import sysupgrade
@@ -36,8 +36,8 @@ class Worker(NamedTuple):
 
             if self.args.reboot and success:
                 success = reboot(system, self.args, job)
-        except OfflineError:
-            LOGGER.error('System is offline: %i', system)
+        except SSHConnectionError:
+            LOGGER.error('Could not establish SSH connection with %i.', system)
 
         job['success'] = success
         job['end'] = datetime.now()

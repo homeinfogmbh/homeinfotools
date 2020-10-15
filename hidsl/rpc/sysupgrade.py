@@ -6,7 +6,7 @@ from subprocess import CompletedProcess
 
 from hidsl.logging import LOGGER
 from hidsl.rpc.common import PACMAN
-from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.exceptions import SSHConnectionError
 from hidsl.rpc.exceptions import PacmanError
 from hidsl.rpc.exceptions import SystemIOError
 from hidsl.rpc.exceptions import UnknownError
@@ -17,7 +17,7 @@ __all__ = ['sysupgrade']
 
 
 BY_RETURNCODE = {
-    255: OfflineError,
+    255: SSHConnectionError,
     126: SystemIOError,
     1: PacmanError
 }

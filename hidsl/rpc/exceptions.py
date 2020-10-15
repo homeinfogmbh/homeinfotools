@@ -3,7 +3,12 @@
 from subprocess import CompletedProcess
 
 
-__all__ = ['OfflineError', 'SystemIOError', 'PacmanError', 'UnknownError']
+__all__ = [
+    'SSHConnectionError',
+    'SystemIOError',
+    'PacmanError',
+    'UnknownError'
+]
 
 
 class RemoteProcessError(Exception):
@@ -32,8 +37,8 @@ class RemoteProcessError(Exception):
         return ' / '.join(items)
 
 
-class OfflineError(RemoteProcessError):
-    """Indicates that the system is offline."""
+class SSHConnectionError(RemoteProcessError):
+    """Indicates that the SSH could not connect to the system."""
 
 
 class SystemIOError(RemoteProcessError):

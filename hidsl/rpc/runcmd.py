@@ -4,7 +4,7 @@ from argparse import Namespace
 from multiprocessing.managers import DictProxy
 
 from hidsl.logging import LOGGER
-from hidsl.rpc.exceptions import OfflineError
+from hidsl.rpc.exceptions import SSHConnectionError
 from hidsl.rpc.functions import execute, ssh
 
 
@@ -20,7 +20,7 @@ def runcmd(system: int, args: Namespace, job: DictProxy) -> bool:
     job['command'] = completed_process.returncode
 
     if completed_process.returncode == 255:
-        raise OfflineError(completed_process)
+        raise SSHConnectionError(completed_process)
 
     LOGGER.debug('Command returned %i.', completed_process.returncode)
 
