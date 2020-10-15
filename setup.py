@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 
-# from os import name
+#from os import name
+from pathlib import Path
 from setuptools import setup
 
 
-SCRIPTS = ['files/sysquery','files/sysrpc', 'files/sysvpn']
-# if os.name == 'nt':
+SCRIPTS = list(Path('scripts').iterdir())
+#if os.name == 'nt':
 SCRIPTS = [f'{script}.py' for script in SCRIPTS]
 
 
