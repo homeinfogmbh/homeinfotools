@@ -6,9 +6,9 @@ from functools import partial
 from json import dump, load
 from typing import Iterable
 
-from hidsl.his import update_credentials, HISSession
-from hidsl.logging import LOGGER
-from hidsl.termgr import SYSTEMS_URL
+from homeinfotools.his import update_credentials, HISSession
+from homeinfotools.logging import LOGGER
+from homeinfotools.termgr import SYSTEMS_URL
 
 
 __all__ = ['casefoldstr', 'get_systems', 'filter_systems']

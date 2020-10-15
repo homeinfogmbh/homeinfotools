@@ -3,10 +3,10 @@
 from logging import DEBUG, INFO, basicConfig
 from sys import stdout
 
-from hidsl.his import update_credentials, ErrorHandler
-from hidsl.logging import LOG_FORMAT
-from hidsl.vpn.argparse import get_args
-from hidsl.vpn.functions import get_vpn_data
+from homeinfotools.his import update_credentials, ErrorHandler
+from homeinfotools.logging import LOG_FORMAT
+from homeinfotools.vpn.argparse import get_args
+from homeinfotools.vpn.functions import get_vpn_data
 
 
 __all__ = ['main']

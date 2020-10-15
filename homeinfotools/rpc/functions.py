@@ -5,7 +5,7 @@ from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
 from typing import Iterable, List, Tuple, Union
 
-from hidsl.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
+from homeinfotools.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
 
 
 __all__ = ['execute', 'ssh', 'sudo', 'get_log_level']

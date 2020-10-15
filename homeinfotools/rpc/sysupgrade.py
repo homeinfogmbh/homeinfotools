@@ -4,13 +4,13 @@ from argparse import Namespace
 from multiprocessing.managers import DictProxy
 from subprocess import CompletedProcess
 
-from hidsl.logging import LOGGER
-from hidsl.rpc.common import PACMAN
-from hidsl.rpc.exceptions import SSHConnectionError
-from hidsl.rpc.exceptions import PacmanError
-from hidsl.rpc.exceptions import SystemIOError
-from hidsl.rpc.exceptions import UnknownError
-from hidsl.rpc.functions import execute, ssh, sudo
+from homeinfotools.logging import LOGGER
+from homeinfotools.rpc.common import PACMAN
+from homeinfotools.rpc.exceptions import SSHConnectionError
+from homeinfotools.rpc.exceptions import PacmanError
+from homeinfotools.rpc.exceptions import SystemIOError
+from homeinfotools.rpc.exceptions import UnknownError
+from homeinfotools.rpc.functions import execute, ssh, sudo
 
 
 __all__ = ['sysupgrade']

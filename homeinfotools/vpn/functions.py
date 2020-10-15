@@ -1,7 +1,7 @@
 """Common functions."""
 
-from hidsl.his import DownloadError, HISSession
-from hidsl.termgr import VPN_URL
+from homeinfotools.his import DownloadError, HISSession
+from homeinfotools.termgr import VPN_URL
 
 
 __all__ = ['get_vpn_data']

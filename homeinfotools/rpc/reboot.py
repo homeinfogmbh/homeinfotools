@@ -3,10 +3,10 @@
 from argparse import Namespace
 from multiprocessing.managers import NamespaceProxy
 
-from hidsl.logging import LOGGER
-from hidsl.rpc.common import SYSTEMCTL
-from hidsl.rpc.exceptions import SSHConnectionError
-from hidsl.rpc.functions import execute, ssh, sudo
+from homeinfotools.logging import LOGGER
+from homeinfotools.rpc.common import SYSTEMCTL
+from homeinfotools.rpc.exceptions import SSHConnectionError
+from homeinfotools.rpc.functions import execute, ssh, sudo
 
 
 __all__ = ['reboot']

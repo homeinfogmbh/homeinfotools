@@ -3,8 +3,8 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from hidsl.os import CACHE_DIR
-from hidsl.query.functions import casefoldstr
+from homeinfotools.os import CACHE_DIR
+from homeinfotools.query.functions import casefoldstr
 
 
 __all__ = ['get_args']

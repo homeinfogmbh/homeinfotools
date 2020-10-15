@@ -2,10 +2,10 @@
 
 from logging import DEBUG, INFO, WARNING, basicConfig
 
-from hidsl.his import ErrorHandler
-from hidsl.logging import LOG_FORMAT, LOGGER
-from hidsl.query.argparse import get_args
-from hidsl.query.functions import filter_systems, get_systems
+from homeinfotools.his import ErrorHandler
+from homeinfotools.logging import LOG_FORMAT, LOGGER
+from homeinfotools.query.argparse import get_args
+from homeinfotools.query.functions import filter_systems, get_systems
 
 
 __all__ = ['main']

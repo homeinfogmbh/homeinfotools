@@ -6,7 +6,7 @@ from typing import Tuple
 
 from requests import session
 
-from hidsl.logging import LOGGER
+from homeinfotools.logging import LOGGER
 
 
 __all__ = [

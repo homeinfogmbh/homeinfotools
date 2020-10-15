@@ -4,11 +4,11 @@ from json import dump
 from logging import basicConfig
 from multiprocessing import Manager, Pool
 
-from hidsl.logging import LOG_FORMAT
-from hidsl.rpc.argparse import get_args
-from hidsl.rpc.json import to_json
-from hidsl.rpc.functions import get_log_level
-from hidsl.rpc.processing import Worker
+from homeinfotools.logging import LOG_FORMAT
+from homeinfotools.rpc.argparse import get_args
+from homeinfotools.rpc.json import to_json
+from homeinfotools.rpc.functions import get_log_level
+from homeinfotools.rpc.processing import Worker
 
 
 __all__ = ['main']

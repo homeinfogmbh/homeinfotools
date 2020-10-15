@@ -5,11 +5,11 @@ from datetime import datetime
 from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
-from hidsl.logging import LOGGER
-from hidsl.rpc.exceptions import SSHConnectionError
-from hidsl.rpc.reboot import reboot
-from hidsl.rpc.runcmd import runcmd
-from hidsl.rpc.sysupgrade import sysupgrade
+from homeinfotools.logging import LOGGER
+from homeinfotools.rpc.exceptions import SSHConnectionError
+from homeinfotools.rpc.reboot import reboot
+from homeinfotools.rpc.runcmd import runcmd
+from homeinfotools.rpc.sysupgrade import sysupgrade
 
 
 __all__ = ['Worker']

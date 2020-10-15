@@ -3,9 +3,9 @@
 from argparse import Namespace
 from multiprocessing.managers import DictProxy
 
-from hidsl.logging import LOGGER
-from hidsl.rpc.exceptions import SSHConnectionError
-from hidsl.rpc.functions import execute, ssh
+from homeinfotools.logging import LOGGER
+from homeinfotools.rpc.exceptions import SSHConnectionError
+from homeinfotools.rpc.functions import execute, ssh
 
 
 __all__ = ['runcmd']

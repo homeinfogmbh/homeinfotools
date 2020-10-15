@@ -1,6 +1,6 @@
 """Common constants."""
 
-from hidsl.os import SSH
+from homeinfotools.os import SSH
 
 
 __all__ = [
