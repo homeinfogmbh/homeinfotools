@@ -5,7 +5,7 @@ from pathlib import Path
 from setuptools import setup
 
 
-SCRIPTS = [str(path) for path in Path('scripts').iterdir()]
+SCRIPTS = Path('scripts').iterdir()
 #if os.name == 'nt':
 #    SCRIPTS = [f'{script}.py' for script in SCRIPTS]
 
@@ -26,7 +26,7 @@ setup(
         'homeinfotools.rpc',
         'homeinfotools.vpn'
     ],
-    scripts=SCRIPTS,
+    scripts=[str(path) for path in SCRIPTS],
     license='GPLv3',
     description='HOMEINFO Digital Signage Linux configurator.'
 )
