@@ -5,7 +5,7 @@ from pathlib import Path
 from setuptools import setup
 
 
-SCRIPTS = list(Path('scripts').iterdir())
+SCRIPTS = [str(path) for path in Path('scripts').iterdir()]
 #if os.name == 'nt':
 SCRIPTS = [f'{script}.py' for script in SCRIPTS]
 
