@@ -1,8 +1,15 @@
 #! /usr/bin/env python3
 """Installation script."""
 
+from os import name
 from pathlib import Path
 from setuptools import setup
+
+
+SCRIPTS = Path('scripts').iterdir()
+
+if name == 'nt':
+    SCRIPTS = [path.rename(f'{path}.py') for path in SCRIPTS]
 
 
 setup(
@@ -20,7 +27,7 @@ setup(
         'homeinfotools.rpc',
         'homeinfotools.vpn'
     ],
-    scripts=[str(path) for path in Path('scripts').iterdir()],
+    scripts=[str(path) for path in SCRIPTS],
     license='GPLv3',
     description='HOMEINFO Digital Signage Linux configurator.'
 )
