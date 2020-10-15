@@ -16,24 +16,22 @@ from hidsl.rpc.functions import execute, ssh, sudo
 __all__ = ['sysupgrade']
 
 
-BY_RETURNCODE = {
-    255: SSHConnectionError,
-    126: SystemIOError,
-    1: PacmanError
-}
+def warn_and_raise(message: str, completed_process: CompletedProcess):
+    """Issues a warning message and raises an exception."""
 
+    if completed_process.returncode == 255:
+        raise SSHConnectionError(completed_process)
 
-def get_exception(completed_process: CompletedProcess) -> Exception:
-    """Raises an exception by the given
-    the success status and return code.
-    """
+    # Do not warn on SSH connection errors.
+    LOGGER.warning(message)
 
-    try:
-        exception = BY_RETURNCODE[completed_process.returncode]
-    except KeyError:
-        return UnknownError(completed_process)
+    if completed_process.returncode == 126:
+        raise SystemIOError(completed_process)
 
-    return exception(completed_process)
+    if completed_process.returncode == 1:
+        raise PacmanError(completed_process)
+
+    return UnknownError(completed_process)
 
 
 def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
@@ -100,23 +98,23 @@ def upgrade(system: int, args: Namespace, job: DictProxy):
         job['keyring'] = completed_process.returncode
 
         if completed_process.returncode != 0:
-            LOGGER.warning('Could not update keyring: %i', system)
-            raise get_exception(completed_process)
+            warn_and_raise(f'Could not update keyring: {system}',
+                           completed_process)
 
     completed_process = upgrade_system(system, args=args)
     job['sysupgrade'] = completed_process.returncode
 
     if completed_process.returncode != 0:
-        LOGGER.warning('Could not upgrade system: %i', system)
-        raise get_exception(completed_process)
+        warn_and_raise(f'Could not upgrade system: {system}',
+                       completed_process)
 
     if args.cleanup:
         completed_process = cleanup_system(system, args=args)
         job['pkgcleanup'] = completed_process.returncode
 
         if completed_process.returncode not in {0, 1}:
-            LOGGER.warning('Could not clean up system: %i', system)
-            raise get_exception(completed_process)
+            warn_and_raise(f'Could not clean up system: {system}',
+                           completed_process)
 
 
 def sysupgrade(system: int, args: Namespace, job: DictProxy) -> bool:
