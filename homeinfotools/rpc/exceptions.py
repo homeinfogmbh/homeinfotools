@@ -1,6 +1,6 @@
 """Common exceptions."""
 
-from homeinfotools import CompletedProcess
+from subprocess import CompletedProcess
 
 
 __all__ = [
