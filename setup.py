@@ -1,25 +1,31 @@
 #! /usr/bin/env python3
 
+# from os import name
 from setuptools import setup
+
+
+SCRIPTS = ['files/sysquery','files/sysrpc', 'files/sysvpn']
+# if os.name == 'nt':
+SCRIPTS = [f'{script}.py' for script in SCRIPTS]
 
 
 setup(
     name='homeinfotools',
     version_format='{tag}',
-    setup_requires=['setuptools-git-version'],
     author='HOMEINFO - Digitale Informationssysteme GmbH',
     author_email='info@homeinfo.de',
     maintainer='Richard Neumann',
     maintainer_email='r.neumann@homeinfo.de',
-    install_requires=['requests'],
     python_requires='>=3.8',
+    setup_requires=['setuptools-git-version'],
+    install_requires=['requests'],
     packages=[
         'homeinfotools',
         'homeinfotools.query',
         'homeinfotools.rpc',
         'homeinfotools.vpn'
     ],
-    scripts=['files/sysquery','files/sysrpc', 'files/sysvpn'],
+    scripts=SCRIPTS,
     license='GPLv3',
     description='HOMEINFO Digital Signage Linux configurator.'
 )
