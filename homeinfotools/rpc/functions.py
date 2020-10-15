@@ -17,9 +17,6 @@ __all__ = [
 ]
 
 
-RED = '\\e[31m{}\\e[0m'
-
-
 def completed_process_to_json(completed_process: CompletedProcess) -> dict:
     """Converts a completed process into a JSON-ish dict."""
 
