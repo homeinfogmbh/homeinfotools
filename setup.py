@@ -7,7 +7,7 @@ from setuptools import setup
 
 SCRIPTS = [str(path) for path in Path('scripts').iterdir()]
 #if os.name == 'nt':
-SCRIPTS = [f'{script}.py' for script in SCRIPTS]
+#    SCRIPTS = [f'{script}.py' for script in SCRIPTS]
 
 
 setup(
