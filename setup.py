@@ -29,5 +29,5 @@ setup(
     ],
     scripts=[str(path) for path in SCRIPTS],
     license='GPLv3',
-    description='HOMEINFO Digital Signage Linux configurator.'
+    description='Tools to manage HOMEINFO digital signge systems.'
 )
