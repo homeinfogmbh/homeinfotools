@@ -6,7 +6,7 @@ from sys import stdout
 from homeinfotools.his import update_credentials, ErrorHandler
 from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.vpn.argparse import get_args
-from homeinfotools.vpn.functions import get_vpn_data
+from homeinfotools.vpn.functions import configure
 
 
 __all__ = ['main']
@@ -20,7 +20,7 @@ def main():
     user, passwd = update_credentials(args.user)
 
     with ErrorHandler('Error during VPN data retrieval.'):
-        tar_file = get_vpn_data(user, passwd, args.system, args.windows)
+        tar_file = configure(user, passwd, args)
 
     if args.file is None:
         stdout.buffer.write(tar_file)
