@@ -4,7 +4,7 @@ from argparse import Namespace
 
 from homeinfotools.his import DownloadError, HISSession
 from homeinfotools.logging import LOGGER
-from homeinfotools.termgr import VPN_URL
+from homeinfotools.termgr import FINALIZE_URL, VPN_URL
 
 
 __all__ = ['configure']
@@ -40,7 +40,7 @@ def finalize_system(session: HISSession, serial_number: str,
     if pubkey is not None:
         json['wg_pubkey'] = pubkey
 
-    response = session.post(VPN_URL, json=json)
+    response = session.post(FINALIZE_URL, json=json)
 
     if response.status_code != 200:
         LOGGER.error('Could not finalize system.')
