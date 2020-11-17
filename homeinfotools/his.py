@@ -1,4 +1,4 @@
-"""Common constants."""
+"""HIS SSO API."""
 
 from getpass import getpass
 from sys import exit    # pylint: disable=W0622
@@ -113,9 +113,9 @@ class HISSession:
 class ErrorHandler:
     """Handles login and download errors."""
 
-    def __init__(self, download_error_text: str):
+    def __init__(self, error_text: str):
         """Sets the download error text."""
-        self.download_error_text = download_error_text
+        self.error_text = error_text
 
     def __enter__(self):
         return self
@@ -128,6 +128,6 @@ class ErrorHandler:
             exit(2)
 
         if typ is DownloadError:
-            LOGGER.error(self.download_error_text)
+            LOGGER.error(self.error_text)
             LOGGER.debug(value)
             exit(3)
