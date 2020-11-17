@@ -23,6 +23,7 @@ setup(
     install_requires=['setuptools-git-version', 'requests'],
     packages=[
         'homeinfotools',
+        'homeinfotools.his',
         'homeinfotools.query',
         'homeinfotools.rpc',
         'homeinfotools.vpn'
