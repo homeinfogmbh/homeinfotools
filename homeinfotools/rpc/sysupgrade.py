@@ -3,7 +3,7 @@
 from argparse import Namespace
 from subprocess import CompletedProcess
 
-from homeinfotools.logging import LOGGER
+from homeinfotools.logging import syslogger
 from homeinfotools.rpc.common import PACMAN
 from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.exceptions import PacmanError
@@ -18,14 +18,14 @@ from homeinfotools.rpc.functions import sudo
 __all__ = ['sysupgrade']
 
 
-def warn_and_raise(message: str, completed_process: CompletedProcess):
+def lograise(system: int, message: str, completed_process: CompletedProcess):
     """Issues a warning message and raises an exception."""
 
     if completed_process.returncode == 255:
         raise SSHConnectionError(completed_process)
 
     # Do not warn on SSH connection errors.
-    LOGGER.warning(message)
+    syslogger(system).warning(message, system)
 
     if completed_process.returncode == 126:
         raise SystemIOError(completed_process)
@@ -33,7 +33,7 @@ def warn_and_raise(message: str, completed_process: CompletedProcess):
     if completed_process.returncode == 1:
         raise PacmanError(completed_process)
 
-    return UnknownError(completed_process)
+    raise UnknownError(completed_process)
 
 
 def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
@@ -45,7 +45,7 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
     ]
     command = sudo(*command)
     command = ssh(system, *command, no_stdin=args.no_stdin)
-    LOGGER.debug('Executing command: %s', command)
+    syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
 
@@ -69,7 +69,7 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
         command = sudo(*command)
         command = ssh(system, *command, no_stdin=args.no_stdin)
 
-    LOGGER.debug('Executing command: %s', command)
+    syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
 
@@ -86,14 +86,14 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
         command = sudo(*command)
         command = ssh(system, *command, no_stdin=args.no_stdin)
 
-    LOGGER.debug('Executing command: %s', command)
+    syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
 
 def upgrade(system: int, args: Namespace):
     """Upgrade process function."""
 
-    LOGGER.info('Upgrading system: %i', system)
+    syslogger(system).info('Upgrading system.')
     result = {}
 
     if args.keyring:
@@ -101,23 +101,20 @@ def upgrade(system: int, args: Namespace):
         result['keyring'] = completed_process_to_json(completed_process)
 
         if completed_process.returncode != 0:
-            warn_and_raise(f'Could not update keyring: {system}',
-                           completed_process)
+            lograise(system, 'Could not update keyring.', completed_process)
 
     completed_process = upgrade_system(system, args=args)
     result['sysupgrade'] = completed_process_to_json(completed_process)
 
     if completed_process.returncode != 0:
-        warn_and_raise(f'Could not upgrade system: {system}',
-                       completed_process)
+        lograise(system, 'Could not upgrade system.', completed_process)
 
     if args.cleanup:
         completed_process = cleanup_system(system, args=args)
         result['pkgcleanup'] = completed_process_to_json(completed_process)
 
         if completed_process.returncode not in {0, 1}:
-            warn_and_raise(f'Could not clean up system: {system}',
-                           completed_process)
+            lograise(system, 'Could not clean up system.', completed_process)
 
     return result
 
@@ -128,14 +125,14 @@ def sysupgrade(system: int, args: Namespace) -> bool:
     try:
         return upgrade(system, args)
     except SystemIOError as error:
-        LOGGER.error('I/O error: %i', system)
-        LOGGER.debug('%s', error)
+        syslogger(system).error('I/O error.')
+        syslogger(system).debug('%s', error)
         return completed_process_to_json(error.completed_process)
     except PacmanError as error:
-        LOGGER.error('Pacman error: %i', system)
-        LOGGER.debug('%s', error)
+        syslogger(system).error('Pacman error.')
+        syslogger(system).debug('%s', error)
         return completed_process_to_json(error.completed_process)
     except UnknownError as error:
-        LOGGER.error('Unknown error: %i', system)
-        LOGGER.debug('%s', error)
+        syslogger(system).error('Unknown error.')
+        syslogger(system).debug('%s', error)
         return completed_process_to_json(error.completed_process)

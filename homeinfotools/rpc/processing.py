@@ -5,7 +5,7 @@ from datetime import datetime
 from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
-from homeinfotools.logging import LOGGER
+from homeinfotools.logging import syslogger
 from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.reboot import reboot
 from homeinfotools.rpc.runcmd import runcmd
@@ -36,7 +36,7 @@ class Worker(NamedTuple):
             if self.args.reboot:
                 result['reboot'] = reboot(system, self.args)
         except SSHConnectionError:
-            LOGGER.error('Could not establish SSH connection with %i.', system)
+            syslogger(system).error('Could not establish SSH connection.')
 
         result['success'] = success
         end = datetime.now()
