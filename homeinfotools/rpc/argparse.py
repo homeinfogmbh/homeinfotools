@@ -1,6 +1,6 @@
 """Argument parsing."""
 
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 
@@ -10,8 +10,7 @@ __all__ = ['get_args']
 def get_args() -> Namespace:
     """Returns parsed CLI arguments."""
 
-    parser = ArgumentParser(description='Batch upgrade systems.',
-                            formatter_class=ArgumentDefaultsHelpFormatter)
+    parser = ArgumentParser(description='Batch upgrade systems.')
     parser.add_argument('system', type=int, nargs='+',
                         help='systems to upgrade')
     parser.add_argument('-S', '--sysupgrade', action='store_true',
