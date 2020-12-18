@@ -25,7 +25,7 @@ def lograise(system: int, message: str, completed_process: CompletedProcess):
         raise SSHConnectionError(completed_process)
 
     # Do not warn on SSH connection errors.
-    syslogger(system).warning(message, system)
+    syslogger(system).warning(message)
 
     if completed_process.returncode == 126:
         raise SystemIOError(completed_process)
