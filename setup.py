@@ -7,7 +7,7 @@ from setuptools import setup
 setup(
     name='homeinfotools',
     version_format='{tag}',
-    install_requires=['setuptools-git-version', 'requests'],
+    setup_requires=['setuptools-git-version', 'requests'],
     author='HOMEINFO - Digitale Informationssysteme GmbH',
     author_email='info@homeinfo.de',
     maintainer='Richard Neumann',
