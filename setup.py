@@ -1,15 +1,7 @@
 #! /usr/bin/env python3
 """Installation script."""
 
-from os import name
-from pathlib import Path
 from setuptools import setup
-
-
-SCRIPTS = Path('scripts').iterdir()
-
-if name == 'nt':
-    SCRIPTS = [path.rename(f'{path}.py') for path in SCRIPTS]
 
 
 setup(
@@ -28,7 +20,13 @@ setup(
         'homeinfotools.rpc',
         'homeinfotools.vpn'
     ],
-    scripts=[str(path) for path in SCRIPTS],
+    entry_points={
+        'console_scripts': [
+            'sysquery = homeinfotools.query.main:main',
+            'sysrpc = homeinfotools.rpc.main:main',
+            'sysvpn = homeinfotools.vpn.main:main',
+        ],
+    },
     license='GPLv3',
     description='Tools to manage HOMEINFO digital signge systems.'
 )
