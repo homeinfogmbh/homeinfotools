@@ -113,7 +113,12 @@ def match_system(system: dict, *, args: Namespace) -> bool:
     if args.customer:
         customer = deployment.get('customer') or {}
         company = customer.get('company') or {}
-        match = str(customer['id']) in args.customer
+
+        if cid := customer.get('id'):
+            match = str(cid) in args.customer
+        else:
+            match = False
+
         match = match or substr_ic_in(company.get('name'), args.customer)
         match = match or substr_ic_in(
             company.get('abbreviation'), args.customer)
