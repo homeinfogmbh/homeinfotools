@@ -7,12 +7,12 @@ from setuptools import setup
 setup(
     name='homeinfotools',
     version_format='{tag}',
+    install_requires=['setuptools-git-version', 'requests'],
     author='HOMEINFO - Digitale Informationssysteme GmbH',
     author_email='info@homeinfo.de',
     maintainer='Richard Neumann',
     maintainer_email='r.neumann@homeinfo.de',
     python_requires='>=3.8',
-    install_requires=['setuptools-git-version', 'requests'],
     packages=[
         'homeinfotools',
         'homeinfotools.his',
@@ -27,6 +27,10 @@ setup(
             'sysvpn = homeinfotools.vpn.main:main',
         ],
     },
+    url='https://github.com/homeinfogmbh/homeinfotools',
     license='GPLv3',
-    description='Tools to manage HOMEINFO digital signge systems.'
+    description='Tools to manage HOMEINFO digital signge systems.',
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
+    keywords='python HOMEINFO systems client'
 )
