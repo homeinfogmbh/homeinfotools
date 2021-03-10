@@ -3,7 +3,7 @@
 from argparse import Namespace
 from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, Union
 
 from homeinfotools.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
 
@@ -35,7 +35,7 @@ def execute(command: Union[str, Iterable[str]]) -> CompletedProcess:
                check=False)
 
 
-def ssh(system: int, *command: str, no_stdin: bool = False) -> List[str]:
+def ssh(system: int, *command: str, no_stdin: bool = False) -> list[str]:
     """Modifies the specified command to
     run via SSH on the specified system.
     """
@@ -55,7 +55,7 @@ def ssh(system: int, *command: str, no_stdin: bool = False) -> List[str]:
     return cmd
 
 
-def sudo(*command: str) -> Tuple[str]:
+def sudo(*command: str) -> tuple[str]:
     """Runs the command as sudo."""
 
     return (SUDO, ' '.join(command))
