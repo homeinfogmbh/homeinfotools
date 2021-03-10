@@ -27,6 +27,7 @@ class HISSession:
         return self
 
     def __exit__(self, *args):
+        self.session_guard = None
         return self.session.__exit__(*args)
 
     def __getattr__(self, attr):
