@@ -23,4 +23,4 @@ def main():
         systems = get_systems(args)
 
     for system in filter_systems(systems, args):
-        print(system['id'])
+        print(system.get('id'))
