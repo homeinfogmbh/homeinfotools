@@ -9,7 +9,7 @@ from homeinfotools.os import CACHE_DIR
 __all__ = ['get_args']
 
 
-CACHE_FILE = CACHE_DIR.joinpath('sysquery.cache')
+CACHE_FILE = CACHE_DIR / 'sysquery.cache'
 
 
 def get_args() -> Namespace:

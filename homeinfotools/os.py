@@ -9,7 +9,7 @@ __all__ = ['SSH', 'CACHE_DIR']
 
 if name == 'posix':
     SSH = '/usr/bin/ssh'
-    CACHE_DIR = Path.home().joinpath('.cache')
+    CACHE_DIR = Path.home() / '.cache'
 elif name == 'nt':
     SSH = 'ssh'
     CACHE_DIR = Path(getenv('TEMP') or getenv('TMP'))
