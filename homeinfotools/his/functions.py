@@ -2,7 +2,6 @@
 
 from getpass import getpass
 from sys import exit    # pylint: disable=W0622
-from typing import Tuple
 
 from homeinfotools.logging import LOGGER
 
@@ -10,7 +9,7 @@ from homeinfotools.logging import LOGGER
 __all__ = ['update_credentials']
 
 
-def update_credentials(account: str, passwd: str = None) -> Tuple[str, str]:
+def update_credentials(account: str, passwd: str = None) -> tuple[str, str]:
     """Reads the credentials for a HIS account."""
 
     if not account:
