@@ -2,7 +2,7 @@
 
 from argparse import Namespace
 from datetime import datetime
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.exceptions import SSHConnectionError
@@ -19,7 +19,7 @@ class Worker(NamedTuple):
 
     args: Namespace
 
-    def __call__(self, system: int) -> Tuple[int, dict]:
+    def __call__(self, system: int) -> tuple[int, dict]:
         """Runs the worker on the given system."""
         start = datetime.now()
         result = {'start': start.isoformat()}
