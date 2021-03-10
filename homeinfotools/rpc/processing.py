@@ -16,6 +16,8 @@ __all__ = ['Worker']
 class Worker:   # pylint: disable=R0903
     """Stored args and manager to process systems."""
 
+    __slots__ = ('args',)
+
     def __init__(self, args: Namespace):
         """Sets the command line arguments."""
         self.args = args
