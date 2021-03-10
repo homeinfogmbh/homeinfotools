@@ -2,7 +2,6 @@
 
 from argparse import Namespace
 from datetime import datetime
-from typing import NamedTuple
 
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.exceptions import SSHConnectionError
@@ -14,10 +13,12 @@ from homeinfotools.rpc.sysupgrade import sysupgrade
 __all__ = ['Worker']
 
 
-class Worker(NamedTuple):
+class Worker:   # pylint: disable=R0903
     """Stored args and manager to process systems."""
 
-    args: Namespace
+    def __init__(self, args: Namespace):
+        """Sets the command line arguments."""
+        self.args = args
 
     def __call__(self, system: int) -> tuple[int, dict]:
         """Runs the worker on the given system."""
