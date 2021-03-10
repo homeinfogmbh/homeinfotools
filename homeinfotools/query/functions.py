@@ -11,13 +11,7 @@ from homeinfotools.logging import LOGGER
 from homeinfotools.termgr import SYSTEMS_URL
 
 
-__all__ = ['casefoldstr', 'get_systems', 'filter_systems']
-
-
-def casefoldstr(string: str) -> str:
-    """Returns a casefolded string."""
-
-    return string.casefold()
+__all__ = ['get_systems', 'filter_systems']
 
 
 def query_systems(account: str, passwd: str) -> list:
