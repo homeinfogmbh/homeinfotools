@@ -2,7 +2,6 @@
 
 from argparse import Namespace
 from datetime import datetime
-from multiprocessing.managers import DictProxy
 from typing import NamedTuple, Tuple
 
 from homeinfotools.logging import syslogger
@@ -20,7 +19,7 @@ class Worker(NamedTuple):
 
     args: Namespace
 
-    def __call__(self, system: int) -> Tuple[int, DictProxy]:
+    def __call__(self, system: int) -> Tuple[int, dict]:
         """Runs the worker on the given system."""
         start = datetime.now()
         result = {'start': start.isoformat()}
