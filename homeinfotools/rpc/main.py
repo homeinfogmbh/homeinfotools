@@ -13,7 +13,7 @@ from homeinfotools.rpc.processing import Worker
 __all__ = ['main']
 
 
-def main():
+def main() -> None:
     """Runs the script."""
 
     args = get_args()
