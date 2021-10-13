@@ -1,11 +1,12 @@
 """SSH command."""
 
+from pathlib import Path
 from typing import Optional
 
-from homeinfotools.os import SSH
+from homeinfotools.os import SSH, RSYNC
 
 
-__all__ = ['ssh']
+__all__ = ['ssh', 'rsync']
 
 
 HOSTNAME = '{}.terminals.homeinfo.intra'
@@ -39,3 +40,10 @@ def ssh(system: Optional[int], *command: str,
         cmd.append(' '.join(command))
 
     return cmd
+
+
+def rsync(system: int, src: Path, dst: Path) -> list[str]:
+    """Returns the respective rsync command."""
+
+    src = HOSTNAME.format(system) + ':' + src
+    return [RSYNC, '-e', ' '.join(ssh(None)), src, str(dst)]
