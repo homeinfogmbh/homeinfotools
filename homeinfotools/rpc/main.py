@@ -1,4 +1,4 @@
-"""Terminal backtch updating utility."""
+"""Terminal batch updating utility."""
 
 from json import dump
 from logging import basicConfig
