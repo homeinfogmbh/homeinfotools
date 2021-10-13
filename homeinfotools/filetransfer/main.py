@@ -1,6 +1,5 @@
 """Batch sync files."""
 
-from json import dump
 from logging import basicConfig
 from multiprocessing import Pool
 
@@ -20,8 +19,4 @@ def main() -> None:
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
 
     with Pool(processes=args.processes) as pool:
-        result = pool.map(Worker(args), args.system)
-
-    if args.json is not None:
-        with args.json.open('w') as file:
-            dump(dict(result), file, indent=2)
+        pool.map(Worker(args), args.system)
