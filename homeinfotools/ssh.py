@@ -48,7 +48,7 @@ def get_remote_path(path: HostPath) -> str:
 
     try:
         system, path = path
-    except ValueError:
+    except TypeError:
         return path
 
     return HOSTNAME.format(system) + f':{path}'
