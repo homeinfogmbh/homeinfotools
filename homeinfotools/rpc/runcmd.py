@@ -4,7 +4,8 @@ from argparse import Namespace
 
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.exceptions import SSHConnectionError
-from homeinfotools.rpc.functions import completed_process_to_json, execute, ssh
+from homeinfotools.rpc.functions import completed_process_to_json, execute
+from homeinfotools.ssh import ssh
 
 
 __all__ = ['runcmd']

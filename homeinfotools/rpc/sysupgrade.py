@@ -11,8 +11,8 @@ from homeinfotools.rpc.exceptions import SystemIOError
 from homeinfotools.rpc.exceptions import UnknownError
 from homeinfotools.rpc.functions import completed_process_to_json
 from homeinfotools.rpc.functions import execute
-from homeinfotools.rpc.functions import ssh
 from homeinfotools.rpc.functions import sudo
+from homeinfotools.ssh import ssh
 
 
 __all__ = ['sysupgrade']

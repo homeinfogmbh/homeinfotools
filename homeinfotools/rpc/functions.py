@@ -3,18 +3,12 @@
 from argparse import Namespace
 from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
-from typing import Iterable, Optional, Union
+from typing import Iterable, Union
 
-from homeinfotools.rpc.common import HOSTNAME, SSH, SSH_OPTIONS, SUDO
+from homeinfotools.rpc.common import SUDO
 
 
-__all__ = [
-    'completed_process_to_json',
-    'execute',
-    'ssh',
-    'sudo',
-    'get_log_level'
-]
+__all__ = ['completed_process_to_json', 'execute', 'sudo', 'get_log_level']
 
 
 def completed_process_to_json(completed_process: CompletedProcess) -> dict:
@@ -33,30 +27,6 @@ def execute(command: Union[str, Iterable[str]]) -> CompletedProcess:
 
     return run(command, stdin=DEVNULL, stdout=PIPE, stderr=PIPE, text=True,
                check=False)
-
-
-def ssh(system: Optional[int], *command: str,
-        no_stdin: bool = False) -> list[str]:
-    """Modifies the specified command to
-    run via SSH on the specified system.
-    """
-
-    cmd = [SSH]
-
-    if no_stdin:
-        cmd.append('-n')
-
-    for option in SSH_OPTIONS:
-        cmd.append('-o')
-        cmd.append(option)
-
-    if system is not None:
-        cmd.append(HOSTNAME.format(system))
-
-    if command:
-        cmd.append(' '.join(command))
-
-    return cmd
 
 
 def sudo(*command: str) -> tuple[str]:

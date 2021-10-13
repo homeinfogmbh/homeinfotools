@@ -7,8 +7,8 @@ from homeinfotools.rpc.common import SYSTEMCTL
 from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.functions import completed_process_to_json
 from homeinfotools.rpc.functions import execute
-from homeinfotools.rpc.functions import ssh
 from homeinfotools.rpc.functions import sudo
+from homeinfotools.ssh import ssh
 
 
 __all__ = ['reboot']
