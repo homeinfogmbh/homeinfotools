@@ -3,9 +3,9 @@
 from argparse import Namespace
 from subprocess import CompletedProcess
 
+from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.common import PACMAN
-from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.exceptions import PacmanError
 from homeinfotools.rpc.exceptions import SystemIOError
 from homeinfotools.rpc.exceptions import UnknownError

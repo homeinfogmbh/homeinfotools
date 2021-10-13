@@ -2,9 +2,9 @@
 
 from argparse import Namespace
 
+from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.common import SYSTEMCTL
-from homeinfotools.rpc.exceptions import SSHConnectionError
 from homeinfotools.rpc.functions import completed_process_to_json
 from homeinfotools.rpc.functions import execute
 from homeinfotools.rpc.functions import sudo
