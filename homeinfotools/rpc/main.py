@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.rpc.argparse import get_args
 from homeinfotools.rpc.functions import get_log_level
-from homeinfotools.rpc.processing import Worker
+from homeinfotools.rpc.worker import Worker
 
 
 __all__ = ['main']
