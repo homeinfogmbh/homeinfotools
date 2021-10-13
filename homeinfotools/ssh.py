@@ -42,8 +42,21 @@ def ssh(system: Optional[int], *command: str,
     return cmd
 
 
-def rsync(system: int, src: Path, dst: Path) -> list[str]:
+
+def rsync(system: int, src: Path, dst: Path, *,
+          all: bool = True,     # pylint: disable=W0622
+          update: bool = True, verbose: bool = True) -> list[str]:
     """Returns the respective rsync command."""
 
-    src = HOSTNAME.format(system) + ':' + src
-    return [RSYNC, '-e', ' '.join(ssh(None)), src, str(dst)]
+    cmd = [RSYNC, '-e', ' '.join(ssh(None))]
+
+    if all:
+        cmd.append('-a')
+
+    if update:
+        cmd.append('-u')
+
+    if verbose:
+        cmd.append('-v')
+
+    return cmd + [HOSTNAME.format(system) + ':' + src, str(dst)]
