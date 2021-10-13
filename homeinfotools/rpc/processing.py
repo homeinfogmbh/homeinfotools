@@ -9,7 +9,7 @@ from homeinfotools.rpc.sysupgrade import sysupgrade
 __all__ = ['Worker']
 
 
-class Worker(BaseWorker):
+class Worker(BaseWorker):   # pylint: disable=R0903
     """Stored args and manager to process systems."""
 
     def run(self, system: int, result: dict) -> None:
