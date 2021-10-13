@@ -4,14 +4,13 @@ from argparse import Namespace
 from subprocess import CompletedProcess
 
 from homeinfotools.exceptions import SSHConnectionError
+from homeinfotools.functions import completed_process_to_json, execute
 from homeinfotools.logging import syslogger
 from homeinfotools.rpc.common import PACMAN
 from homeinfotools.rpc.exceptions import PacmanError
 from homeinfotools.rpc.exceptions import SystemIOError
 from homeinfotools.rpc.exceptions import UnknownError
-from homeinfotools.rpc.functions import completed_process_to_json
-from homeinfotools.rpc.functions import execute
-from homeinfotools.rpc.functions import sudo
+from homeinfotools.rpc.sudo import sudo
 from homeinfotools.ssh import ssh
 
 

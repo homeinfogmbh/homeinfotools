@@ -4,9 +4,9 @@ from json import dump
 from logging import basicConfig
 from multiprocessing import Pool
 
+from homeinfotools.functions import get_log_level
 from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.rpc.argparse import get_args
-from homeinfotools.rpc.functions import get_log_level
 from homeinfotools.rpc.worker import Worker
 
 
