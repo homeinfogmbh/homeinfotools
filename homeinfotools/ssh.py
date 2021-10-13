@@ -1,7 +1,7 @@
 """SSH command."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from homeinfotools.os import SSH, RSYNC
 
@@ -16,6 +16,7 @@ SSH_OPTIONS = [
     'StrictHostKeyChecking=no',
     'ConnectTimeout=5'
 ]
+HostPath = Union[Path, tuple[int, Path]]
 
 
 def ssh(system: Optional[int], *command: str,
@@ -42,8 +43,18 @@ def ssh(system: Optional[int], *command: str,
     return cmd
 
 
+def get_remote_path(path: HostPath) -> str:
+    """Returns a host path."""
 
-def rsync(system: int, src: Path, dst: Path, *,
+    try:
+        system, path = path
+    except ValueError:
+        return path
+
+    return HOSTNAME.format(system) + f':{path}'
+
+
+def rsync(src: HostPath, dst: HostPath, *,
           all: bool = True,     # pylint: disable=W0622
           update: bool = True, verbose: bool = True) -> list[str]:
     """Returns the respective rsync command."""
@@ -59,4 +70,4 @@ def rsync(system: int, src: Path, dst: Path, *,
     if verbose:
         cmd.append('-v')
 
-    return cmd + [HOSTNAME.format(system) + ':' + src, str(dst)]
+    return cmd + [get_remote_path(src), get_remote_path(dst)]
