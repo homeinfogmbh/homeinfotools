@@ -7,10 +7,10 @@ from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['Worker']
+__all__ = ['BaseWorker']
 
 
-class Worker:   # pylint: disable=R0903
+class BaseWorker:   # pylint: disable=R0903
     """Stored args and manager to process systems."""
 
     __slots__ = ('args',)
@@ -24,7 +24,7 @@ class Worker:   # pylint: disable=R0903
         result = {'start': (start := datetime.now()).isoformat()}
 
         try:
-            self.run(system)
+            self.run(system, result)
         except SSHConnectionError:
             syslogger(system).error('Could not establish SSH connection.')
             result['success'] = False
@@ -36,6 +36,6 @@ class Worker:   # pylint: disable=R0903
         result['duration'] = str(end - start)
         return (system, result)
 
-    def run(self, system: int) -> None:
+    def run(self, system: int, result: dict) -> None:
         """Runs the respective processes."""
         raise NotImplementedError()
