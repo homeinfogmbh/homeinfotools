@@ -25,4 +25,9 @@ def get_args() -> Namespace:
                         help='amount of parallel processes')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose logging')
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if sum((args.send, args.retrieve)) != 1:
+        parser.error('Must specify either send xor receive.')
+
+    return args
