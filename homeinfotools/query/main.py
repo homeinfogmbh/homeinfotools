@@ -11,7 +11,7 @@ from homeinfotools.query.functions import filter_systems, get_systems
 __all__ = ['main']
 
 
-def main():
+def main() -> None:
     """Runs the script."""
 
     args = get_args()
