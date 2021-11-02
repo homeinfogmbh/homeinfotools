@@ -1,12 +1,20 @@
 """Common functions."""
 
 from argparse import Namespace
+from functools import wraps
 from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
-from typing import Iterable, Union
+from typing import Callable, Iterable, Union
+
+from homeinfotools.logging import LOGGER
 
 
-__all__ = ['completed_process_to_json', 'execute', 'get_log_level']
+__all__ = [
+    'completed_process_to_json',
+    'execute',
+    'get_log_level',
+    'handle_keyboard_interrupt'
+]
 
 
 def completed_process_to_json(completed_process: CompletedProcess) -> dict:
@@ -31,3 +39,20 @@ def get_log_level(args: Namespace) -> int:
     """Returns the set logging level."""
 
     return DEBUG if args.debug else INFO if args.verbose else WARNING
+
+
+def handle_keyboard_interrupt(
+        function: Callable[..., None]) -> Callable[..., int]:
+    """Decorator to run a function with handled keyboard interrupt."""
+
+    @wraps(function)
+    def wrapper(*args, **kwargs) -> int:
+        try:
+            function(*args, **kwargs)
+        except KeyboardInterrupt:
+            LOGGER.error('Aborted by user.')
+            return 1
+
+        return 0
+
+    return wrapper
