@@ -3,6 +3,7 @@
 from logging import DEBUG, INFO, basicConfig
 from sys import stdout
 
+from homeinfotools.functions import handle_keyboard_interrupt
 from homeinfotools.his import update_credentials, ErrorHandler
 from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.vpn.argparse import get_args
@@ -12,6 +13,7 @@ from homeinfotools.vpn.functions import configure
 __all__ = ['main']
 
 
+@handle_keyboard_interrupt
 def main():
     """Main script."""
 
