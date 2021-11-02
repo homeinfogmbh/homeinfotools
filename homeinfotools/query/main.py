@@ -2,6 +2,7 @@
 
 from logging import DEBUG, INFO, WARNING, basicConfig
 
+from homeinfotools.functions import handle_keyboard_interrupt
 from homeinfotools.his import ErrorHandler
 from homeinfotools.logging import LOG_FORMAT, LOGGER
 from homeinfotools.query.argparse import get_args
@@ -11,6 +12,7 @@ from homeinfotools.query.functions import filter_systems, get_systems
 __all__ = ['main']
 
 
+@handle_keyboard_interrupt
 def main() -> None:
     """Runs the script."""
 

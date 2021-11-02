@@ -4,8 +4,8 @@ from json import dump
 from logging import basicConfig
 from multiprocessing import Pool
 
-from homeinfotools.functions import get_log_level
-from homeinfotools.logging import LOGGER, LOG_FORMAT
+from homeinfotools.functions import get_log_level, handle_keyboard_interrupt
+from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.rpc.argparse import get_args
 from homeinfotools.rpc.worker import Worker
 
@@ -13,7 +13,8 @@ from homeinfotools.rpc.worker import Worker
 __all__ = ['main']
 
 
-def run() -> None:
+@handle_keyboard_interrupt
+def main() -> None:
     """Runs the script."""
 
     args = get_args()
@@ -25,15 +26,3 @@ def run() -> None:
     if args.json is not None:
         with args.json.open('w') as file:
             dump(dict(result), file, indent=2)
-
-
-def main() -> int:
-    """Main script with guard."""
-
-    try:
-        run()
-    except KeyboardInterrupt:
-        LOGGER.error('Aborted by user.')
-        return 1
-
-    return 0

@@ -3,7 +3,7 @@
 from logging import basicConfig
 from multiprocessing import Pool
 
-from homeinfotools.functions import get_log_level
+from homeinfotools.functions import get_log_level, handle_keyboard_interrupt
 from homeinfotools.logging import LOG_FORMAT
 from homeinfotools.filetransfer.argparse import get_args
 from homeinfotools.filetransfer.worker import Worker
@@ -12,6 +12,7 @@ from homeinfotools.filetransfer.worker import Worker
 __all__ = ['main']
 
 
+@handle_keyboard_interrupt
 def main() -> None:
     """Runs the script."""
 
