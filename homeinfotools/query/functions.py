@@ -86,23 +86,19 @@ def substr_ic_in(string: str, haystack: Iterable[str]) -> bool:
 def match_system(system: dict, *, args: Namespace) -> bool:
     """Matches the system to the filters."""
 
-    if args.id:
-        if system.get('id') not in args.id:
-            return False
+    if args.id and system.get('id') not in args.id:
+        return False
 
-    if args.os:
-        if system.get('operatingSystem') not in args.os:
-            return False
+    if args.os and system.get('operatingSystem') not in args.os:
+        return False
 
-    if args.sn:
-        if system.get('serialNumber') not in args.sn:
-            return False
+    if args.sn and system.get('serialNumber') not in args.sn:
+        return False
 
     deployment = system.get('deployment') or {}
 
-    if args.deployment:
-        if deployment.get('id') not in args.deployment:
-            return False
+    if args.deployment and deployment.get('id') not in args.deployment:
+        return False
 
     if args.customer:
         customer = deployment.get('customer') or {}
@@ -120,27 +116,24 @@ def match_system(system: dict, *, args: Namespace) -> bool:
         if not match:
             return False
 
-    if args.type:
-        if deployment.get('type') not in args.type:
-            return False
+    if args.type and deployment.get('type') not in args.type:
+        return False
 
     address = deployment.get('address') or {}
 
-    if args.street:
-        if not substr_ic_in(address.get('street'), args.street):
-            return False
+    if args.street and not substr_ic_in(address.get('street'), args.street):
+        return False
 
-    if args.house_number:
-        if not substr_ic_in(address.get('houseNumber'), args.house_number):
-            return False
+    if args.house_number and not substr_ic_in(
+            address.get('houseNumber'), args.house_number):
+        return False
 
-    if args.zip_code:
-        if not substr_ic_in(address.get('zipCode'), args.zip_code):
-            return False
+    if args.zip_code and not substr_ic_in(
+            address.get('zipCode'), args.zip_code):
+        return False
 
-    if args.city:
-        if not substr_ic_in(address.get('city'), args.city):
-            return False
+    if args.city and not substr_ic_in(address.get('city'), args.city):
+        return False
 
     return True
 
