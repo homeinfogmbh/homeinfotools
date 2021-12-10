@@ -17,6 +17,16 @@ from homeinfotools.ssh import ssh
 __all__ = ['sysupgrade']
 
 
+PACMAN_WRAPPER = '''\
+STDOUT=$(mktemp); \
+STDERR=$(mktemp); \
+%s > ${STDOUT} 2> ${STDERR}; \
+RETURNCODE=$?; \
+rm ${STDOUT} ${STDERR}; \
+exit ${RETURNCODE};\
+'''
+
+
 def lograise(system: int, message: str, completed_process: CompletedProcess):
     """Issues a warning message and raises an exception."""
 
@@ -60,14 +70,16 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
         command.append('--overwrite')
         command.append(glob)
 
-    if args.yes:
-        command = 'yes | ' + ' '.join(sudo(*command))
-        command = ssh(system, command, no_stdin=args.no_stdin)
-    else:
+    if not args.yes:
         command.append('--noconfirm')
-        command = sudo(*command)
-        command = ssh(system, *command, no_stdin=args.no_stdin)
 
+    command = ' '.join(sudo(*command))
+
+    if args.yes:
+        command = f'yes | {command}'
+
+    command = PACMAN_WRAPPER % command
+    command = ssh(system, command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
@@ -75,16 +87,18 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
 def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     """Cleans up the system."""
 
-    command = [PACMAN, '-Rncs', '$(pacman -Qmq)', '$(pacman -Qdtq)']
+    command = [PACMAN, '-Rncs', '$(pacman -Qmq; pacman -Qdtq)']
+
+    if not args.yes:
+        command.append('--noconfirm')
+
+    command = ' '.join(sudo(*command))
 
     if args.yes:
-        command = 'yes | ' + ' '.join(sudo(*command))
-        command = ssh(system, command, no_stdin=args.no_stdin)
-    else:
-        command.append('--noconfirm')
-        command = sudo(*command)
-        command = ssh(system, *command, no_stdin=args.no_stdin)
+        command = f'yes | {command}'
 
+    command = PACMAN_WRAPPER % command
+    command = ssh(system, command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
