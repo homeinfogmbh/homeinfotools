@@ -19,14 +19,14 @@ class ErrorHandler:
     def __enter__(self):
         return self
 
-    def __exit__(self, typ, value, _):
+    def __exit__(self, _, value, __):
         """Handles login and download errors."""
-        if typ is LoginError:
+        if isinstance(value, LoginError):
             LOGGER.error('Error during login.')
             LOGGER.debug(value)
             exit(2)
 
-        if typ is DownloadError:
+        if isinstance(value, DownloadError):
             LOGGER.error(self.error_text)
             LOGGER.debug(value)
             exit(3)

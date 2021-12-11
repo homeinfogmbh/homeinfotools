@@ -14,7 +14,7 @@ __all__ = ['main']
 
 
 @handle_keyboard_interrupt
-def main():
+def main() -> None:
     """Main script."""
 
     args = get_args()

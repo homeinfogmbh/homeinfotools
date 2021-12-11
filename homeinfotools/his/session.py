@@ -1,5 +1,7 @@
 """HIS SSO API."""
 
+from typing import Any
+
 from requests import session
 
 from homeinfotools.his.exceptions import DownloadError, LoginError
@@ -30,7 +32,7 @@ class HISSession:
         self.session_guard = None
         return self.session.__exit__(*args)
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         """Delegates to the session object."""
         return getattr(self.session_guard, attr)
 
@@ -39,7 +41,7 @@ class HISSession:
         """Returns the login credentials as JSON."""
         return {'account': self.account, 'passwd': self.passwd}
 
-    def login(self):
+    def login(self) -> bool:
         """Performs a login."""
         response = self.post(HIS_LOGIN_URL, json=self.credentials)
 
@@ -48,7 +50,7 @@ class HISSession:
 
         return True
 
-    def get_json(self, url):
+    def get_json(self, url: str) -> dict:
         """Returns a JSON-ish dict."""
         response = self.get(url)
 

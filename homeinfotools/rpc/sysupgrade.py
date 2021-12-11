@@ -27,7 +27,8 @@ exit ${RETURNCODE};\
 '''
 
 
-def lograise(system: int, message: str, completed_process: CompletedProcess):
+def lograise(system: int, message: str,
+             completed_process: CompletedProcess) -> None:
     """Issues a warning message and raises an exception."""
 
     if completed_process.returncode == 255:
@@ -103,7 +104,7 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     return execute(command)
 
 
-def upgrade(system: int, args: Namespace):
+def upgrade(system: int, args: Namespace) -> dict:
     """Upgrade process function."""
 
     syslogger(system).info('Upgrading system.')
