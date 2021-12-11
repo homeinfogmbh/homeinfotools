@@ -12,13 +12,13 @@ from homeinfotools.ssh import rsync
 __all__ = ['filetransfer']
 
 
-def send(system: int, src: Path, dst: Path):
+def send(system: int, src: Path, dst: Path) -> list[str]:
     """Sends a file to the system."""
 
     return rsync(src, (system, dst))
 
 
-def retrieve(system: int, src: Path, dst: Path):
+def retrieve(system: int, src: Path, dst: Path) -> list[str]:
     """Retrieves a file from the system."""
 
     dst = dst.parent / (dst.stem + f'.{system}' + dst.suffix)
