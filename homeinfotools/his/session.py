@@ -7,10 +7,10 @@ from requests import session
 from homeinfotools.his.exceptions import DownloadError, LoginError
 
 
-__all__ = ['HIS_LOGIN_URL', 'HISSession']
+__all__ = ['HISSession']
 
 
-HIS_LOGIN_URL = 'https://his.homeinfo.de/session'
+URL = 'https://his.homeinfo.de/session'
 
 
 class HISSession:
@@ -37,24 +37,20 @@ class HISSession:
         return getattr(self.session_guard, attr)
 
     @property
-    def credentials(self):
+    def json(self):
         """Returns the login credentials as JSON."""
         return {'account': self.account, 'passwd': self.passwd}
 
     def login(self) -> bool:
         """Performs a login."""
-        response = self.post(HIS_LOGIN_URL, json=self.credentials)
-
-        if response.status_code != 200:
+        if (response := self.post(URL, json=self.json)).status_code != 200:
             raise LoginError(response)
 
         return True
 
     def get_json(self, url: str) -> dict:
         """Returns a JSON-ish dict."""
-        response = self.get(url)
-
-        if response.status_code != 200:
+        if (response := self.get(url)).status_code != 200:
             raise DownloadError(response)
 
         return response.json()
