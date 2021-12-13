@@ -22,6 +22,8 @@ STDOUT=$(mktemp); \
 STDERR=$(mktemp); \
 %s > ${STDOUT} 2> ${STDERR}; \
 RETURNCODE=$?; \
+cat ${STDOUT}; \
+cat ${STDERR} >&2; \
 rm ${STDOUT} ${STDERR}; \
 exit ${RETURNCODE};\
 '''
