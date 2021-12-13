@@ -17,16 +17,7 @@ from homeinfotools.ssh import ssh
 __all__ = ['sysupgrade']
 
 
-PACMAN_WRAPPER = '''\
-STDOUT=$(mktemp); \
-STDERR=$(mktemp); \
-%s > ${STDOUT} 2> ${STDERR}; \
-RETURNCODE=$?; \
-cat ${STDOUT}; \
-cat ${STDERR} >&2; \
-rm ${STDOUT} ${STDERR}; \
-exit ${RETURNCODE};\
-'''
+PACMAN_WRAPPER = '%s; EXIT_CODE=$?; wait; exit ${EXIT_CODE};'
 
 
 def lograise(system: int, message: str,
@@ -81,8 +72,7 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     if args.yes:
         command = f'yes | {command}'
 
-    command = PACMAN_WRAPPER % command
-    command = ssh(system, command, no_stdin=args.no_stdin)
+    command = ssh(system, PACMAN_WRAPPER % command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
@@ -100,8 +90,7 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     if args.yes:
         command = f'yes | {command}'
 
-    command = PACMAN_WRAPPER % command
-    command = ssh(system, command, no_stdin=args.no_stdin)
+    command = ssh(system, PACMAN_WRAPPER % command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command)
 
