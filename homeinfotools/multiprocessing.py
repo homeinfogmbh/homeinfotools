@@ -1,12 +1,10 @@
 """Multiprocessing worker."""
 
 from argparse import Namespace
-from collections import defaultdict
 from datetime import datetime
-from itertools import chain
 from multiprocessing import Process, Queue
 from queue import Empty
-from typing import Type
+from typing import Any, Iterator, Type
 
 from setproctitle import setproctitle
 
@@ -22,14 +20,13 @@ class BaseWorker:
 
     __slots__ = ('index', 'args', 'systems', 'results')
 
-    def __init__(self, index: int, args: Namespace, systems: Queue):
+    def __init__(self, index: int, systems: Queue, results: Queue):
         """Sets the command line arguments."""
         self.index = index
-        self.args = args
         self.systems = systems
-        self.results = defaultdict(dict)
+        self.results = results
 
-    def __call__(self) -> None:
+    def __call__(self, args: Namespace) -> None:
         """Runs the worker on the given system."""
         setproctitle(f'hidsltools-worker-{self.index}')
 
@@ -39,14 +36,15 @@ class BaseWorker:
             except Empty:
                 return
 
-            self._process_system(system, self.results[system])
+            result = self._process_system(system, args)
+            self.results.put_nowait((system, result))
 
-    def _process_system(self, system: int, result: dict) -> None:
+    def _process_system(self, system: int, args: Namespace) -> dict:
         """Processes a single system."""
-        result['start'] = (start := datetime.now()).isoformat()
+        result = {'start': (start := datetime.now()).isoformat()}
 
         try:
-            result['result'] = self.run(system)
+            result['result'] = self.run(system, args)
         except SSHConnectionError:
             syslogger(system).error('Could not establish SSH connection.')
             result['success'] = False
@@ -55,32 +53,44 @@ class BaseWorker:
 
         result['end'] = (end := datetime.now()).isoformat()
         result['duration'] = str(end - start)
+        return result
 
-    def run(self, system: int) -> dict:
+    @staticmethod
+    def run(system: int, args: Namespace) -> dict:
         """Runs the respective processes."""
         raise NotImplementedError()
 
 
-def multiprocess(worker_cls: Type[BaseWorker], args: Namespace) -> dict:
+def multiprocess(
+        worker_cls: Type[BaseWorker],
+        systems: list[int],
+        processes: int,
+        args: Namespace
+) -> dict:
     """Spawns workers and waits for them to finish."""
 
-    systems = Queue(len(args.system))
+    systems_queue = Queue(len(systems))
+    results = Queue()
 
-    for system in args.system:
-        systems.put_nowait(system)
+    for system in systems:
+        systems_queue.put_nowait(system)
 
-    workers = []
-    processes = []
+    proc_list = []
 
-    for index in range(args.processes):
-        process = Process(target=(worker := worker_cls(index, args, systems)))
-        workers.append(worker)
-        processes.append(process)
+    for index in range(processes):
+        target = worker_cls(index, systems_queue, results)
+        process = Process(target=target, args=(args,))
+        proc_list.append(process)
         process.start()
 
-    for process in processes:
+    for process in proc_list:
         process.join()
 
-    return dict(chain.from_iterable(
-        worker.results.items() for worker in workers
-    ))
+    return dict(iter_queue(results))
+
+
+def iter_queue(queue: Queue) -> Iterator[Any]:
+    """Returns queue elements as dict."""
+
+    while not queue.empty():
+        yield queue.get_nowait()

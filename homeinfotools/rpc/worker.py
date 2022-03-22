@@ -1,5 +1,7 @@
 """Processing of systems."""
 
+from argparse import Namespace
+
 from homeinfotools.multiprocessing import BaseWorker
 from homeinfotools.rpc.reboot import reboot
 from homeinfotools.rpc.runcmd import runcmd
@@ -12,17 +14,18 @@ __all__ = ['Worker']
 class Worker(BaseWorker):
     """Stored args and manager to process systems."""
 
-    def run(self, system: int) -> dict:
+    @staticmethod
+    def run(system: int, args: Namespace) -> dict:
         """Runs the worker."""
         result = {}
 
-        if self.args.sysupgrade:
-            result['sysupgrade'] = sysupgrade(system, self.args)
+        if args.sysupgrade:
+            result['sysupgrade'] = sysupgrade(system, args)
 
-        if self.args.execute:
-            result['execute'] = runcmd(system, self.args)
+        if args.execute:
+            result['execute'] = runcmd(system, args)
 
-        if self.args.reboot:
-            result['reboot'] = reboot(system, self.args)
+        if args.reboot:
+            result['reboot'] = reboot(system, args)
 
         return result

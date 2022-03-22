@@ -19,7 +19,7 @@ def main() -> None:
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
-    result = multiprocess(Worker, args)
+    result = multiprocess(Worker, args.system, args.processes, args=args)
 
     if args.json is not None:
         with args.json.open('w') as file:

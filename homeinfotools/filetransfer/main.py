@@ -18,4 +18,4 @@ def main() -> None:
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
-    multiprocess(Worker, args)
+    multiprocess(Worker, args.system, args.processes, args=args)
