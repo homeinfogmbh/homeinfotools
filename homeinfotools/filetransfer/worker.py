@@ -7,9 +7,9 @@ from homeinfotools.worker import BaseWorker
 __all__ = ['Worker']
 
 
-class Worker(BaseWorker):   # pylint: disable=R0903
+class Worker(BaseWorker):
     """Stored args and manager to process systems."""
 
-    def run(self, system: int, result: dict) -> None:
+    def run(self, system: int) -> dict:
         """Runs the worker."""
-        result['sysupgrade'] = filetransfer(system, self.args)
+        return {'rsync': filetransfer(system, self.args)}
