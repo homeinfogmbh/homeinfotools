@@ -1,6 +1,7 @@
 """Batch sync files."""
 
 from logging import basicConfig
+from random import shuffle
 
 from homeinfotools.functions import get_log_level, handle_keyboard_interrupt
 from homeinfotools.logging import LOG_FORMAT
@@ -18,4 +19,8 @@ def main() -> None:
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
+
+    if args.shuffle:
+        shuffle(args.systems)
+
     multiprocess(Worker, args.system, args.processes, args=args)

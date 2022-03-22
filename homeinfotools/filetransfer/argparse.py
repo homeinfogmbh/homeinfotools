@@ -33,6 +33,9 @@ def get_args() -> Namespace:
         help='amount of parallel processes'
     )
     parser.add_argument(
+        '-s', '--shuffle', action='store_true', help='shuffle systems'
+    )
+    parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'
     )
     args = parser.parse_args()
