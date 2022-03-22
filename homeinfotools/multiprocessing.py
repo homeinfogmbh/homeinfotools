@@ -18,13 +18,33 @@ __all__ = ['BaseWorker', 'multiprocess']
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('index', 'args', 'systems', 'results')
+    __slots__ = ('index', 'args', 'systems', 'results', '_current_system')
 
     def __init__(self, index: int, systems: Queue, results: Queue):
         """Sets the command line arguments."""
         self.index = index
         self.systems = systems
         self.results = results
+        self.current_system = None
+
+    @property
+    def current_system(self) -> int | None:
+        """Returns the current system being processed."""
+        return self._current_system
+
+    @current_system.setter
+    def current_system(self, system: int | None) -> None:
+        """Sets the current system being processed."""
+        self._current_system = system
+        setproctitle(self.proctitle)
+
+    @property
+    def proctitle(self) -> str:
+        """Returns the current pocess title."""
+        if self.current_system is None:
+            return f'hidsltools-worker-{self.index}'
+
+        return f'hidsltools-worker-{self.index}@{self.current_system}'
 
     def __call__(self, args: Namespace) -> None:
         """Runs the worker on the given system."""
@@ -32,7 +52,7 @@ class BaseWorker:
 
         while True:
             try:
-                system = self.systems.get_nowait()
+                self.current_system = system = self.systems.get_nowait()
             except Empty:
                 return
 
