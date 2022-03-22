@@ -14,7 +14,7 @@ from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['BaseWorker', 'spawn']
+__all__ = ['BaseWorker', 'multiprocess']
 
 
 class BaseWorker:
@@ -61,7 +61,7 @@ class BaseWorker:
         raise NotImplementedError()
 
 
-def spawn(args: Namespace, worker_cls: Type[BaseWorker]) -> dict:
+def multiprocess(worker_cls: Type[BaseWorker], args: Namespace) -> dict:
     """Spawns workers and waits for them to finish."""
 
     systems = Queue(args.system)
