@@ -6,7 +6,7 @@ from logging import INFO, Logger, getLogger
 from multiprocessing import Process, Queue
 from queue import Empty
 from signal import SIGUSR1, SIGUSR2, signal
-from typing import Any, Iterable, Iterator, Type
+from typing import Any, Iterable, Iterator, Sequence, Type
 
 from setproctitle import setproctitle
 
@@ -107,26 +107,50 @@ def multiprocess(
 ) -> dict:
     """Spawns workers and waits for them to finish."""
 
-    systems_queue = Queue(len(systems))
     results = Queue()
-
-    for system in systems:
-        systems_queue.put_nowait(system)
-
-    proc_list = []
-
-    for index in range(processes):
-        target = worker_cls(index, systems_queue, results)
-        process = Process(target=target, args=(args,))
-        proc_list.append(process)
-        process.start()
-
-    wait_for_processes(proc_list)
+    wait_for_processes(
+        spawn_workers(
+            worker_cls,
+            processes,
+            sequence_to_queue(systems),
+            results,
+            args
+        )
+    )
     return dict(iter_queue(results))
+
+
+def sequence_to_queue(sequence: Sequence[Any]) -> Queue:
+    """Returns a queue with items from the given sequence."""
+
+    queue = Queue(len(sequence))
+
+    for item in sequence:
+        queue.put(item)
+
+    return queue
+
+
+def spawn_workers(
+        worker_cls: Type[BaseWorker],
+        amount: int,
+        systems: Queue,
+        results: Queue,
+        args: Namespace
+) -> Iterator[Process]:
+    """Spawns worker processes."""
+
+    for index in range(amount):
+        worker = worker_cls(index, systems, results)
+        process = Process(target=worker, args=(args,))
+        process.start()
+        yield process
 
 
 def wait_for_processes(processes: Iterable[Process]) -> None:
     """Wait for the given processes."""
+
+    processes = list(processes)
 
     try:
         for process in processes:
