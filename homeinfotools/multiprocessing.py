@@ -64,7 +64,11 @@ class BaseWorker:
 def multiprocess(worker_cls: Type[BaseWorker], args: Namespace) -> dict:
     """Spawns workers and waits for them to finish."""
 
-    systems = Queue(args.system)
+    systems = Queue(len(args.system))
+
+    for system in args.system:
+        systems.put_nowait(system)
+
     workers = []
     processes = []
 
