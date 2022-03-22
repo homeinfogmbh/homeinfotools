@@ -40,10 +40,13 @@ class BaseWorker:
             try:
                 self.current_system = system = self.systems.get_nowait()
             except Empty:
+                self.logger.info('Finished')
                 return
 
             result = self.process_system(system, args)
             self.results.put_nowait((system, result))
+
+        self.logger.info('Aborted')
 
     @property
     def info(self) -> str:
