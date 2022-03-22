@@ -1,6 +1,6 @@
 """Processing of systems."""
 
-from homeinfotools.worker import BaseWorker
+from homeinfotools.multiprocessing import BaseWorker
 from homeinfotools.rpc.reboot import reboot
 from homeinfotools.rpc.runcmd import runcmd
 from homeinfotools.rpc.sysupgrade import sysupgrade

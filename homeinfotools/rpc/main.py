@@ -2,10 +2,10 @@
 
 from json import dump
 from logging import basicConfig
-from multiprocessing import Pool
 
 from homeinfotools.functions import get_log_level, handle_keyboard_interrupt
 from homeinfotools.logging import LOG_FORMAT
+from homeinfotools.multiprocessing import multiprocess
 from homeinfotools.rpc.argparse import get_args
 from homeinfotools.rpc.worker import Worker
 
@@ -19,9 +19,7 @@ def main() -> None:
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
-
-    with Pool(processes=args.processes) as pool:
-        result = pool.map(Worker(args), args.system)
+    result = multiprocess(Worker, args)
 
     if args.json is not None:
         with args.json.open('w') as file:
