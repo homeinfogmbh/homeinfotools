@@ -17,6 +17,9 @@ setup(
     maintainer='Richard Neumann',
     maintainer_email='r.neumann@homeinfo.de',
     python_requires='>=3.8',
+    install_requires=[
+        'setproctitle'
+    ],
     packages=[
         'homeinfotools',
         'homeinfotools.filetransfer',
