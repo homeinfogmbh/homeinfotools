@@ -2,8 +2,10 @@
 
 from argparse import Namespace
 from datetime import datetime
+from logging import INFO, Logger, getLogger
 from multiprocessing import Process, Queue
 from queue import Empty
+from signal import SIGUSR1, SIGUSR2, signal
 from typing import Any, Iterator, Type
 
 from setproctitle import setproctitle
@@ -18,37 +20,62 @@ __all__ = ['BaseWorker', 'multiprocess']
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('index', 'args', 'systems', 'results')
+    __slots__ = ('index', 'systems', 'results', 'running', 'current_system')
 
     def __init__(self, index: int, systems: Queue, results: Queue):
         """Sets the command line arguments."""
         self.index = index
         self.systems = systems
         self.results = results
+        self.running = True
+        self.current_system = None
 
     def __call__(self, args: Namespace) -> None:
         """Runs the worker on the given system."""
-        self.update_process_title()
+        setproctitle(self.name)
+        signal(SIGUSR1, self.signal)
+        signal(SIGUSR2, self.signal)
 
-        while True:
+        while self.running:
             try:
-                system = self.systems.get_nowait()
+                self.current_system = system = self.systems.get_nowait()
             except Empty:
                 return
 
             result = self.process_system(system, args)
             self.results.put_nowait((system, result))
 
-    def update_process_title(self, system: int | None = None) -> None:
-        """Returns the current process title."""
-        if system is None:
-            return setproctitle(f'hidsltools-worker-{self.index}')
+    @property
+    def info(self) -> str:
+        """Returns information about the state of the worker."""
+        if self.current_system is None:
+            return 'idle'
 
-        return setproctitle(f'hidsltools-worker-{self.index}@{system}')
+        return f'Processing system #{self.current_system}'
+
+    @property
+    def logger(self) -> Logger:
+        """Returns the worker's logger."""
+        logger = getLogger(self.name)
+        logger.setLevel(INFO)
+        return logger
+
+    @property
+    def name(self) -> str:
+        """Returns the worker's name."""
+        return f'hidsltools-worker-{self.index}'
+
+    def signal(self, signal_number: int, _: Any) -> None:
+        """Handles the given signal."""
+        if signal_number == SIGUSR1:
+            self.logger.info(self.info)
+        elif signal_number == SIGUSR2:
+            self.running = False
+        else:
+            self.logger.error('Received invalid signal: %i', signal_number)
 
     def process_system(self, system: int, args: Namespace) -> dict:
         """Processes a single system."""
-        self.update_process_title(system)
         result = {'start': (start := datetime.now()).isoformat()}
 
         try:
