@@ -3,29 +3,36 @@
 from argparse import Namespace
 from collections import defaultdict
 from datetime import datetime
-from multiprocessing import Queue
+from itertools import chain
+from multiprocessing import Process, Queue
 from queue import Empty
+from typing import Type
+
+from setproctitle import setproctitle
 
 from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['BaseWorker']
+__all__ = ['BaseWorker', 'spawn']
 
 
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('args', 'systems', 'results')
+    __slots__ = ('index', 'args', 'systems', 'results')
 
-    def __init__(self, args: Namespace, systems: Queue[int]):
+    def __init__(self, index: int, args: Namespace, systems: Queue[int]):
         """Sets the command line arguments."""
+        self.index = index
         self.args = args
         self.systems = systems
         self.results = defaultdict(dict)
 
     def __call__(self) -> None:
         """Runs the worker on the given system."""
+        setproctitle(f'hidsltools-worker-{self.index}')
+
         while True:
             try:
                 system = self.systems.get_nowait()
@@ -52,3 +59,24 @@ class BaseWorker:
     def run(self, system: int) -> dict:
         """Runs the respective processes."""
         raise NotImplementedError()
+
+
+def spawn(args: Namespace, worker_cls: Type[BaseWorker]) -> dict:
+    """Spawns workers and waits for them to finish."""
+
+    systems = Queue(args.system)
+    workers = []
+    processes = []
+
+    for index in range(args.processes):
+        process = Process(target=(worker := worker_cls(index, args, systems)))
+        workers.append(worker)
+        processes.append(process)
+        process.start()
+
+    for process in processes:
+        process.join()
+
+    return dict(chain.from_iterable(
+        worker.results.items() for worker in workers
+    ))
