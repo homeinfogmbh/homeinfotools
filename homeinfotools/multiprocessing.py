@@ -6,7 +6,7 @@ from logging import INFO, Logger, getLogger
 from multiprocessing import Process, Queue
 from queue import Empty
 from signal import SIGUSR1, SIGUSR2, signal
-from typing import Any, Iterator, Type
+from typing import Any, Iterable, Iterator, Type
 
 from setproctitle import setproctitle
 
@@ -118,10 +118,19 @@ def multiprocess(
         proc_list.append(process)
         process.start()
 
-    for process in proc_list:
-        process.join()
-
+    wait_for_processes(proc_list)
     return dict(iter_queue(results))
+
+
+def wait_for_processes(processes: Iterable[Process]) -> None:
+    """Wait for the given processes."""
+
+    try:
+        for process in processes:
+            process.join()
+    except KeyboardInterrupt:
+        for process in processes:
+            process.kill()
 
 
 def iter_queue(queue: Queue) -> Iterator[Any]:
