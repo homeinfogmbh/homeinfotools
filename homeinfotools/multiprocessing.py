@@ -38,7 +38,7 @@ class BaseWorker:
 
         while self.running:
             try:
-                self.current_system = system = self.systems.get_nowait()
+                self.current_system = system = self.systems.get(timeout=1)
             except Empty:
                 self.logger.info('Finished')
                 return
