@@ -18,49 +18,37 @@ __all__ = ['BaseWorker', 'multiprocess']
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('index', 'args', 'systems', 'results', '_current_system')
+    __slots__ = ('index', 'args', 'systems', 'results')
 
     def __init__(self, index: int, systems: Queue, results: Queue):
         """Sets the command line arguments."""
         self.index = index
         self.systems = systems
         self.results = results
-        self.current_system = None
-
-    @property
-    def current_system(self) -> int | None:
-        """Returns the current system being processed."""
-        return self._current_system
-
-    @current_system.setter
-    def current_system(self, system: int | None) -> None:
-        """Sets the current system being processed."""
-        self._current_system = system
-        setproctitle(self.proctitle)
-
-    @property
-    def proctitle(self) -> str:
-        """Returns the current pocess title."""
-        if self.current_system is None:
-            return f'hidsltools-worker-{self.index}'
-
-        return f'hidsltools-worker-{self.index}@{self.current_system}'
 
     def __call__(self, args: Namespace) -> None:
         """Runs the worker on the given system."""
-        setproctitle(f'hidsltools-worker-{self.index}')
+        self.update_process_title()
 
         while True:
             try:
-                self.current_system = system = self.systems.get_nowait()
+                system = self.systems.get_nowait()
             except Empty:
                 return
 
-            result = self._process_system(system, args)
+            result = self.process_system(system, args)
             self.results.put_nowait((system, result))
 
-    def _process_system(self, system: int, args: Namespace) -> dict:
+    def update_process_title(self, system: int | None = None) -> None:
+        """Returns the current process title."""
+        if system is None:
+            return setproctitle(f'hidsltools-worker-{self.index}')
+
+        return setproctitle(f'hidsltools-worker-{self.index}@{system}')
+
+    def process_system(self, system: int, args: Namespace) -> dict:
         """Processes a single system."""
+        self.update_process_title(system)
         result = {'start': (start := datetime.now()).isoformat()}
 
         try:
