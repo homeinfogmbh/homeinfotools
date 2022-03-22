@@ -154,6 +154,8 @@ def wait_for_processes(processes: list[Process]) -> None:
         for process in processes:
             process.kill()
 
+        raise
+
 
 def iter_queue(queue: Queue) -> Iterator[Any]:
     """Yield queue items."""
