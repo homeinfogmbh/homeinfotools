@@ -20,7 +20,7 @@ def main() -> int:
     basicConfig(format=LOG_FORMAT, level=get_log_level(args))
 
     if args.shuffle:
-        shuffle(args.systems)
+        shuffle(args.system)
 
     try:
         multiprocess(Worker, args.system, args.processes, args=args)
