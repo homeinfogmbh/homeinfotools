@@ -6,7 +6,7 @@ from logging import INFO, Logger, getLogger
 from multiprocessing import Process, Queue
 from queue import Empty
 from signal import SIGUSR1, SIGUSR2, signal
-from typing import Any, Iterable, Iterator, Sequence, Type
+from typing import Any, Iterator, Sequence, Type
 
 from setproctitle import setproctitle
 
@@ -107,16 +107,13 @@ def multiprocess(
 ) -> dict:
     """Spawns workers and waits for them to finish."""
 
-    results = Queue()
-    wait_for_processes(
-        spawn_workers(
-            worker_cls,
-            processes,
-            sequence_to_queue(systems),
-            results,
-            args
-        )
-    )
+    wait_for_processes(list(spawn_workers(
+        worker_cls,
+        processes,
+        sequence_to_queue(systems),
+        results := Queue(),
+        args
+    )))
     return dict(iter_queue(results))
 
 
@@ -147,10 +144,8 @@ def spawn_workers(
         yield process
 
 
-def wait_for_processes(processes: Iterable[Process]) -> None:
+def wait_for_processes(processes: list[Process]) -> None:
     """Wait for the given processes."""
-
-    processes = list(processes)
 
     try:
         for process in processes:
