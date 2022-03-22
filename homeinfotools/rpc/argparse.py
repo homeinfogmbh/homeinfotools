@@ -1,6 +1,7 @@
 """Argument parsing."""
 
 from argparse import ArgumentParser, Namespace
+from multiprocessing import cpu_count
 from pathlib import Path
 
 
@@ -34,6 +35,7 @@ def get_args() -> Namespace:
     parser.add_argument('-o', '--overwrite', default=(), nargs='+',
                         metavar='glob', help='globs of files to overwrite')
     parser.add_argument('-p', '--processes', type=int, metavar='n',
+                        default=cpu_count(),
                         help='amount of parallel processes')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='enable verbose logging')
