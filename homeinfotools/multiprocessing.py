@@ -22,7 +22,7 @@ class BaseWorker:
 
     __slots__ = ('index', 'args', 'systems', 'results')
 
-    def __init__(self, index: int, args: Namespace, systems: Queue[int]):
+    def __init__(self, index: int, args: Namespace, systems: Queue):
         """Sets the command line arguments."""
         self.index = index
         self.args = args
