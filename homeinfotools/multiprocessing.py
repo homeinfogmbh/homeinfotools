@@ -161,7 +161,7 @@ def wait_for_processes(processes: Iterable[Process]) -> None:
 
 
 def iter_queue(queue: Queue) -> Iterator[Any]:
-    """Returns queue elements as dict."""
+    """Yield queue items."""
 
     while not queue.empty():
-        yield queue.get_nowait()
+        yield queue.get()
