@@ -4,7 +4,7 @@ from argparse import Namespace
 from functools import wraps
 from logging import DEBUG, INFO, WARNING
 from subprocess import DEVNULL, PIPE, run, CompletedProcess
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable
 
 from homeinfotools.logging import LOGGER
 
