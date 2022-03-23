@@ -1,7 +1,7 @@
 """System upgrade."""
 
 from argparse import Namespace
-from subprocess import CompletedProcess
+from subprocess import TimeoutExpired, CompletedProcess
 
 from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.functions import completed_process_to_json, execute
@@ -133,6 +133,12 @@ def sysupgrade(system: int, args: Namespace) -> dict:
         syslogger(system).error('I/O error.')
         syslogger(system).debug('%s', error)
         return completed_process_to_json(error.completed_process)
+    except TimeoutExpired as error:
+        syslogger(system).error(
+            'Subprocess timed out after %s seconds.', error.timeout
+        )
+        syslogger(system).debug('%s', error)
+        return {'timeout': error.timeout}
     except PacmanError as error:
         syslogger(system).error('Pacman error.')
         syslogger(system).debug('%s', error)
