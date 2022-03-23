@@ -85,9 +85,9 @@ class BaseWorker:
             result['result'] = self.run(system, args)
         except SSHConnectionError:
             syslogger(system).error('Could not establish SSH connection.')
-            result['success'] = False
+            result['online'] = False
         else:
-            result['success'] = True
+            result['online'] = True
 
         result['end'] = (end := datetime.now()).isoformat()
         result['duration'] = str(end - start)
