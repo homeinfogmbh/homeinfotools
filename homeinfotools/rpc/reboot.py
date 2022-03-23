@@ -13,7 +13,7 @@ from homeinfotools.ssh import ssh
 __all__ = ['reboot']
 
 
-def reboot(system: int, args: Namespace) -> bool:
+def reboot(system: int, args: Namespace) -> dict:
     """Reboots a system."""
 
     command = ssh(system, *sudo(SYSTEMCTL, 'reboot'), no_stdin=args.no_stdin)

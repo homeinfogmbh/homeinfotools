@@ -11,7 +11,7 @@ from homeinfotools.ssh import ssh
 __all__ = ['runcmd']
 
 
-def runcmd(system: int, args: Namespace) -> bool:
+def runcmd(system: int, args: Namespace) -> dict:
     """Runs commands on a remote system."""
 
     command = ssh(system, args.execute, no_stdin=args.no_stdin)
