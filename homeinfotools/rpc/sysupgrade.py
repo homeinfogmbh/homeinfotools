@@ -124,7 +124,7 @@ def upgrade(system: int, args: Namespace) -> dict:
     return result
 
 
-def sysupgrade(system: int, args: Namespace) -> bool:
+def sysupgrade(system: int, args: Namespace) -> dict:
     """Upgrades the respective system."""
 
     try:
