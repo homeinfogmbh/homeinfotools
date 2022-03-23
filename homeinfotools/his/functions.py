@@ -1,7 +1,7 @@
 """HIS SSO API."""
 
 from getpass import getpass
-from sys import exit    # pylint: disable=W0622
+from sys import exit
 from typing import Optional
 
 from homeinfotools.logging import LOGGER
