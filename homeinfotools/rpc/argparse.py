@@ -60,6 +60,10 @@ def get_args() -> Namespace:
         '-s', '--shuffle', action='store_true', help='shuffle systems'
     )
     parser.add_argument(
+        '-t', '--timeout', type=int, metavar='seconds', default=20*60,
+        help='seconds to wait for subprocesses to time out'
+    )
+    parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'
     )
     parser.add_argument(
