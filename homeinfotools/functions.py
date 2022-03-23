@@ -29,14 +29,16 @@ def completed_process_to_json(completed_process: CompletedProcess) -> dict:
 
 
 def execute(
-        command: Union[str, Iterable[str]],
+        command: str | Iterable[str],
         *,
         timeout: int | None = None
 ) -> CompletedProcess:
     """Executes the given command."""
 
-    return run(command, stdin=DEVNULL, stdout=PIPE, stderr=PIPE, text=True,
-               check=False, timeout=timeout)
+    return run(
+        command, stdin=DEVNULL, stdout=PIPE, stderr=PIPE, text=True,
+        check=False, timeout=timeout
+    )
 
 
 def get_log_level(args: Namespace) -> int:
