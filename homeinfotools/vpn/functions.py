@@ -22,8 +22,15 @@ def get_vpn_data(session: HISSession, system: int, windows: bool) -> bytes:
     return response.content
 
 
-def finalize_system(session: HISSession, system: int, *, serial_number: str,
-                    operating_system: str, model: str, pubkey: str) -> bool:
+def finalize_system(
+        session: HISSession,
+        system: int,
+        *,
+        serial_number: str,
+        operating_system: str,
+        model: str,
+        pubkey: str
+) -> bool:
     """Finalizes the system."""
 
     json = {'system': system}
@@ -58,5 +65,6 @@ def configure(user: str, passwd: str, args: Namespace) -> bytes:
         finalize_system(
             session, args.system, serial_number=args.serial_number,
             operating_system=args.operating_system, model=args.model,
-            pubkey=args.pubkey)
+            pubkey=args.pubkey
+        )
         return vpn_data
