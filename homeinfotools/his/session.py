@@ -48,7 +48,7 @@ class HISSession:
 
         return True
 
-    def get_json(self, url: str) -> dict:
+    def get_json(self, url: str) -> dict | list:
         """Returns a JSON-ish dict."""
         if (response := self.get(url)).status_code != 200:
             raise DownloadError(response)
