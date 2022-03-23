@@ -1,6 +1,6 @@
 """HIS SSO API."""
 
-from sys import exit    # pylint: disable=W0622
+from sys import exit
 
 from homeinfotools.his.exceptions import DownloadError, LoginError
 from homeinfotools.logging import LOGGER
