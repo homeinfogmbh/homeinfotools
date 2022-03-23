@@ -32,6 +32,8 @@ def filetransfer(system: int, args: Namespace) -> bool:
         command = retrieve(system, args.src, args.dst)
     elif args.send:
         command = send(system, args.src, args.dst)
+    else:
+        raise ValueError('No direction selected.')
 
     syslogger(system).debug('Sending "%s" to system.', args.src)
     completed_process = execute(command)
