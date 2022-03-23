@@ -2,7 +2,6 @@
 
 from getpass import getpass
 from sys import exit
-from typing import Optional
 
 from homeinfotools.logging import LOGGER
 
@@ -10,8 +9,10 @@ from homeinfotools.logging import LOGGER
 __all__ = ['update_credentials']
 
 
-def update_credentials(account: Optional[str],
-                       passwd: Optional[str] = None) -> tuple[str, str]:
+def update_credentials(
+        account: str | None,
+        passwd: str | None = None
+) -> tuple[str, str]:
     """Reads the credentials for a HIS account."""
 
     if not account:
@@ -30,4 +31,4 @@ def update_credentials(account: Optional[str],
             LOGGER.error('Aborted by user.')
             exit(1)
 
-    return (account, passwd)
+    return account, passwd
