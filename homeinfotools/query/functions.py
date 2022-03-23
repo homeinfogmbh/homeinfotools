@@ -82,7 +82,6 @@ def substr_ic_in(string: str, haystack: Iterable[str]) -> bool:
     return any(substring in string for substring in haystack)
 
 
-# pylint:disable=R0911,R0912
 def match_system(system: dict, *, args: Namespace) -> bool:
     """Matches the system to the filters."""
 
