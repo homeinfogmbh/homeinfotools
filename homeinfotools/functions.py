@@ -48,7 +48,8 @@ def get_log_level(args: Namespace) -> int:
 
 
 def handle_keyboard_interrupt(
-        function: Callable[..., None]) -> Callable[..., int]:
+        function: Callable[..., None]
+) -> Callable[..., int]:
     """Decorator to run a function with handled keyboard interrupt."""
 
     @wraps(function)
