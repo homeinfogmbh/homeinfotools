@@ -20,8 +20,9 @@ __all__ = ['sysupgrade']
 PACMAN_WRAPPER = '%s; EXIT_CODE=$?; wait; exit ${EXIT_CODE};'
 
 
-def lograise(system: int, message: str,
-             completed_process: CompletedProcess) -> None:
+def lograise(
+        system: int, message: str, completed_process: CompletedProcess
+) -> None:
     """Issues a warning message and raises an exception."""
 
     if completed_process.returncode == 255:
@@ -49,7 +50,7 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
     command = sudo(*command)
     command = ssh(system, *command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
-    return execute(command)
+    return execute(command, timeout=args.timeout)
 
 
 def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
@@ -74,7 +75,7 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
 
     command = ssh(system, PACMAN_WRAPPER % command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
-    return execute(command)
+    return execute(command, timeout=args.timeout)
 
 
 def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
@@ -92,7 +93,7 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
 
     command = ssh(system, PACMAN_WRAPPER % command, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
-    return execute(command)
+    return execute(command, timeout=args.timeout)
 
 
 def upgrade(system: int, args: Namespace) -> dict:
