@@ -55,11 +55,11 @@ def handle_keyboard_interrupt(
     @wraps(function)
     def wrapper(*args, **kwargs) -> int:
         try:
-            function(*args, **kwargs)
+            return_code = function(*args, **kwargs)
         except KeyboardInterrupt:
             LOGGER.error('Aborted by user.')
             return 1
 
-        return 0
+        return 0 if return_code is None else return_code
 
     return wrapper
