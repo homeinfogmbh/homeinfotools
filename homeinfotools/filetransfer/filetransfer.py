@@ -25,7 +25,7 @@ def retrieve(system: int, src: Path, dst: Path) -> list[str]:
     return rsync((system, src), dst)
 
 
-def filetransfer(system: int, args: Namespace) -> bool:
+def filetransfer(system: int, args: Namespace) -> dict:
     """Runs commands on a remote system."""
 
     if args.retrieve:
