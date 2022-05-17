@@ -1,5 +1,6 @@
 """SSH command."""
 
+from functools import cache
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
 
@@ -40,10 +41,10 @@ def ssh(
         cmd.append('-o')
         cmd.append(option)
 
-    if user is None:
-        user = get_ssh_user(system)
-
     if system is not None:
+        if user is None:
+            user = get_ssh_user(system)
+
         hostname = HOSTNAME.format(system)
 
         if user is not None:
@@ -92,6 +93,7 @@ def get_remote_path(path: HostPath) -> str:
     return HOSTNAME.format(system) + f':{path}'
 
 
+@cache
 def get_ssh_user(system: int) -> str | None:
     """Returns the SSH user."""
 
