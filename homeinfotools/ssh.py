@@ -2,7 +2,7 @@
 
 from functools import cache
 from pathlib import Path
-from subprocess import CalledProcessError, check_call
+from subprocess import DEVNULL, CalledProcessError, check_call
 
 from homeinfotools.os import SSH, RSYNC
 
@@ -99,7 +99,11 @@ def get_ssh_user(system: int) -> str | None:
 
     for user in USERS:
         try:
-            check_call(ssh(system, TRUE, user=user))
+            check_call(
+                ssh(system, TRUE, user=user),
+                stdout=DEVNULL,
+                stderr=DEVNULL
+            )
         except CalledProcessError:
             continue
 
