@@ -45,17 +45,6 @@ def ssh(
     return cmd
 
 
-def get_remote_path(path: HostPath) -> str:
-    """Returns a host path."""
-
-    try:
-        system, path = path
-    except TypeError:
-        return path
-
-    return HOSTNAME.format(system) + f':{path}'
-
-
 def rsync(
         src: HostPath,
         dst: HostPath,
@@ -78,3 +67,14 @@ def rsync(
         cmd.append('-v')
 
     return cmd + [get_remote_path(src), get_remote_path(dst)]
+
+
+def get_remote_path(path: HostPath) -> str:
+    """Returns a host path."""
+
+    try:
+        system, path = path
+    except TypeError:
+        return path
+
+    return HOSTNAME.format(system) + f':{path}'
