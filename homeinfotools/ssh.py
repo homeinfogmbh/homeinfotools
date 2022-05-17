@@ -1,6 +1,7 @@
 """SSH command."""
 
 from pathlib import Path
+from subprocess import CalledProcessError, check_call
 
 from homeinfotools.os import SSH, RSYNC
 
@@ -15,12 +16,15 @@ SSH_OPTIONS = [
     'StrictHostKeyChecking=no',
     'ConnectTimeout=5'
 ]
+TRUE = '/usr/bin/true'
+USERS = {'homeinfo', 'root'}
 HostPath = Path | tuple[int, Path]
 
 
 def ssh(
         system: int | None,
         *command: str,
+        user: str | None = None,
         no_stdin: bool = False
 ) -> list[str]:
     """Modifies the specified command to
@@ -36,8 +40,16 @@ def ssh(
         cmd.append('-o')
         cmd.append(option)
 
+    if user is None:
+        user = get_ssh_user(system)
+
     if system is not None:
-        cmd.append(HOSTNAME.format(system))
+        hostname = HOSTNAME.format(system)
+
+        if user is not None:
+            hostname = f'{user}@{hostname}'
+
+        cmd.append(hostname)
 
     if command:
         cmd.append(' '.join(command))
@@ -78,3 +90,17 @@ def get_remote_path(path: HostPath) -> str:
         return path
 
     return HOSTNAME.format(system) + f':{path}'
+
+
+def get_ssh_user(system: int) -> str | None:
+    """Returns the SSH user."""
+
+    for user in USERS:
+        try:
+            check_call(ssh(system, TRUE, user=user))
+        except CalledProcessError:
+            continue
+
+        return user
+
+    return None
