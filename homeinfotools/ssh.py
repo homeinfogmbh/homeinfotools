@@ -90,7 +90,7 @@ def get_remote_path(path: HostPath) -> str:
     except TypeError:
         return path
 
-    return HOSTNAME.format(system) + f':{path}'
+    return HOSTNAME.format(f'{get_ssh_user(system)}@{system}') + f':{path}'
 
 
 @cache
