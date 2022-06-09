@@ -1,8 +1,6 @@
 """SSH command."""
 
-from functools import cache
 from pathlib import Path
-from subprocess import DEVNULL, CalledProcessError, check_call
 
 from homeinfotools.os import SSH, RSYNC
 
@@ -18,7 +16,6 @@ SSH_OPTIONS = [
     'ConnectTimeout=5'
 ]
 TRUE = '/usr/bin/true'
-USERS = {'homeinfo', 'root'}
 HostPath = Path | tuple[int, Path]
 
 
@@ -42,9 +39,6 @@ def ssh(
         cmd.append(option)
 
     if system is not None:
-        if user is None:
-            user = get_ssh_user(system)
-
         hostname = HOSTNAME.format(system)
 
         if user is not None:
@@ -90,23 +84,4 @@ def get_remote_path(path: HostPath) -> str:
     except TypeError:
         return path
 
-    return HOSTNAME.format(f'{get_ssh_user(system)}@{system}') + f':{path}'
-
-
-@cache
-def get_ssh_user(system: int) -> str | None:
-    """Returns the SSH user."""
-
-    for user in USERS:
-        try:
-            check_call(
-                ssh(system, TRUE, user=user),
-                stdout=DEVNULL,
-                stderr=DEVNULL
-            )
-        except CalledProcessError:
-            continue
-
-        return user
-
-    return None
+    return HOSTNAME.format(system) + f':{path}'
