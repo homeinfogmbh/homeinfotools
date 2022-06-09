@@ -15,11 +15,12 @@ def get_args() -> Namespace:
     parser.add_argument(
         'system', type=int, nargs='+', help='systems to upgrade'
     )
-    parser.add_argument(
+    send_receive = parser.add_mutually_exclusive_group(required=True)
+    send_receive.add_argument(
         '-S', '--send', action='store_true',
         help='send a file to the system(s)'
     )
-    parser.add_argument(
+    send_receive.add_argument(
         '-R', '--retrieve', action='store_true',
         help='retrieve a file from the system(s)'
     )
@@ -38,9 +39,4 @@ def get_args() -> Namespace:
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'
     )
-    args = parser.parse_args()
-
-    if sum((args.send, args.retrieve)) != 1:
-        parser.error('Must specify either send xor receive.')
-
-    return args
+    return parser.parse_args()
