@@ -58,6 +58,7 @@ def rsync(
         *,
         all: bool = True,
         update: bool = True,
+        user: str | None = None,
         verbose: bool = True
 ) -> list[str]:
     """Returns the respective rsync command."""
@@ -73,10 +74,14 @@ def rsync(
     if verbose:
         cmd.append('-v')
 
-    return cmd + [get_remote_path(src), get_remote_path(dst)]
+    return [
+        *cmd,
+        get_remote_path(src, user=user),
+        get_remote_path(dst, user=user)
+    ]
 
 
-def get_remote_path(path: HostPath) -> str:
+def get_remote_path(path: HostPath, *, user: str | None = None) -> str:
     """Returns a host path."""
 
     try:
@@ -84,4 +89,7 @@ def get_remote_path(path: HostPath) -> str:
     except TypeError:
         return path
 
-    return HOSTNAME.format(system) + f':{path}'
+    return ':'.join([
+        HOSTNAME.format(system if user is None else f'{user}@{system}'),
+        str(path)
+    ])
