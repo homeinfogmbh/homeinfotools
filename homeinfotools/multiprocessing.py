@@ -3,7 +3,7 @@
 from argparse import Namespace
 from datetime import datetime
 from logging import INFO, Logger, getLogger
-from multiprocessing import Process, Queue
+from multiprocessing import JoinableQueue, Process, Queue
 from queue import Empty
 from signal import SIGUSR1, SIGUSR2, signal
 from typing import Any, Iterator, Sequence, Type
@@ -22,7 +22,7 @@ class BaseWorker:
 
     __slots__ = ('index', 'systems', 'results', 'running', 'current_system')
 
-    def __init__(self, index: int, systems: Queue, results: Queue):
+    def __init__(self, index: int, systems: JoinableQueue, results: Queue):
         """Sets the command line arguments."""
         self.index = index
         self.systems = systems
@@ -117,10 +117,10 @@ def multiprocess(
     return dict(iter_queue(results))
 
 
-def sequence_to_queue(sequence: Sequence[Any]) -> Queue:
+def sequence_to_queue(sequence: Sequence[Any]) -> JoinableQueue:
     """Returns a queue with items from the given sequence."""
 
-    queue = Queue(len(sequence))
+    queue = JoinableQueue(len(sequence))
 
     for item in sequence:
         queue.put(item)
@@ -131,7 +131,7 @@ def sequence_to_queue(sequence: Sequence[Any]) -> Queue:
 def spawn_workers(
         worker_cls: Type[BaseWorker],
         amount: int,
-        systems: Queue,
+        systems: JoinableQueue,
         results: Queue,
         args: Namespace
 ) -> Iterator[Process]:
@@ -160,5 +160,8 @@ def wait_for_processes(processes: list[Process]) -> None:
 def iter_queue(queue: Queue) -> Iterator[Any]:
     """Yield queue items."""
 
-    while not queue.empty():
-        yield queue.get()
+    try:
+        while True:
+            yield queue.get_nowait()
+    except Empty:
+        return
