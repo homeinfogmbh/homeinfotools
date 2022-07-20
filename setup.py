@@ -18,6 +18,7 @@ setup(
     maintainer_email='r.neumann@homeinfo.de',
     python_requires='>=3.8',
     install_requires=[
+        'requests',
         'setproctitle'
     ],
     packages=[
