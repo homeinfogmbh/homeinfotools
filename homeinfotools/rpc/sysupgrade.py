@@ -45,7 +45,7 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
         '--disable-download-timeout'
     ]
     command = sudo(*command)
-    command = ssh(system, *command, no_stdin=args.no_stdin)
+    command = ssh(system, *command, user=args.user, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command, timeout=args.timeout)
 
@@ -70,7 +70,7 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     if args.yes:
         command = f'yes | {command}'
 
-    command = ssh(system, command, no_stdin=args.no_stdin)
+    command = ssh(system, command, user=args.user, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command, timeout=args.timeout)
 
@@ -88,7 +88,7 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     if args.yes:
         command = f'yes | {command}'
 
-    command = ssh(system, command, no_stdin=args.no_stdin)
+    command = ssh(system, command, user=args.user, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
     return execute(command, timeout=args.timeout)
 

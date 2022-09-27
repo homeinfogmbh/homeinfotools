@@ -12,26 +12,38 @@ from homeinfotools.ssh import rsync
 __all__ = ['filetransfer']
 
 
-def send(system: int, src: Path, dst: Path) -> list[str]:
+def send(
+        system: int,
+        src: Path,
+        dst: Path,
+        *,
+        user: str | None = None
+) -> list[str]:
     """Sends a file to the system."""
 
-    return rsync(src, (system, dst))
+    return rsync(src, (system, dst), user=user)
 
 
-def retrieve(system: int, src: Path, dst: Path) -> list[str]:
+def retrieve(
+        system: int,
+        src: Path,
+        dst: Path,
+        *,
+        user: str | None = None
+) -> list[str]:
     """Retrieves a file from the system."""
 
     dst = dst.parent / (dst.stem + f'.{system}' + dst.suffix)
-    return rsync((system, src), dst)
+    return rsync((system, src), dst, user=user)
 
 
 def filetransfer(system: int, args: Namespace) -> dict:
     """Runs commands on a remote system."""
 
     if args.retrieve:
-        command = retrieve(system, args.src, args.dst)
+        command = retrieve(system, args.src, args.dst, user=args.user)
     elif args.send:
-        command = send(system, args.src, args.dst)
+        command = send(system, args.src, args.dst, user=args.user)
     else:
         raise ValueError('No direction selected.')
 
