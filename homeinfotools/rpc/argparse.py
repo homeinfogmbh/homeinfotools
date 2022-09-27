@@ -57,6 +57,10 @@ def get_args() -> Namespace:
         help='amount of parallel processes'
     )
     parser.add_argument(
+        '-q', '--chunk-size', type=int, metavar='n',
+        help='chunk size for multiprocessing'
+    )
+    parser.add_argument(
         '-s', '--shuffle', action='store_true', help='shuffle systems'
     )
     parser.add_argument(

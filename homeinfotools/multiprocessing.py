@@ -3,10 +3,9 @@
 from argparse import Namespace
 from datetime import datetime
 from logging import INFO, Logger, getLogger
-from multiprocessing import JoinableQueue, Process, Queue
+from multiprocessing import Queue
 from queue import Empty
-from signal import SIGUSR1, SIGUSR2, signal
-from typing import Any, Iterator, Sequence, Type
+from typing import Any, Iterator
 
 from setproctitle import setproctitle
 
@@ -14,47 +13,26 @@ from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['BaseWorker', 'multiprocess']
+__all__ = ['BaseWorker', 'consume']
 
 
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('index', 'systems', 'results', 'running', 'current_system')
+    __slots__ = ('results', 'args', 'system')
 
-    def __init__(self, index: int, systems: JoinableQueue, results: Queue):
+    def __init__(self, results: Queue, args: Namespace):
         """Sets the command line arguments."""
-        self.index = index
-        self.systems = systems
         self.results = results
-        self.running = True
-        self.current_system = None
+        self.args = args
+        self.system = None
 
-    def __call__(self, args: Namespace) -> None:
+    def __call__(self, system: int) -> None:
         """Runs the worker on the given system."""
         setproctitle(self.name)
-        signal(SIGUSR1, self.signal)
-        signal(SIGUSR2, self.signal)
-
-        while self.running:
-            try:
-                self.current_system = system = self.systems.get(timeout=1)
-            except Empty:
-                self.logger.info('Finished')
-                return
-
-            result = self.process_system(system, args)
-            self.results.put_nowait((system, result))
-
+        result = self.process_system(system)
+        self.results.put_nowait((system, result))
         self.logger.info('Aborted')
-
-    @property
-    def info(self) -> str:
-        """Returns information about the state of the worker."""
-        if self.current_system is None:
-            return 'idle'
-
-        return f'Processing system #{self.current_system}'
 
     @property
     def logger(self) -> Logger:
@@ -66,23 +44,14 @@ class BaseWorker:
     @property
     def name(self) -> str:
         """Returns the worker's name."""
-        return f'hidsltools-worker-{self.index}'
+        return f'hidsltools-worker@{self.system}'
 
-    def signal(self, signal_number: int, _: Any) -> None:
-        """Handles the given signal."""
-        if signal_number == SIGUSR1:
-            self.logger.info(self.info)
-        elif signal_number == SIGUSR2:
-            self.running = False
-        else:
-            self.logger.error('Received invalid signal: %i', signal_number)
-
-    def process_system(self, system: int, args: Namespace) -> dict:
+    def process_system(self, system: int) -> dict:
         """Processes a single system."""
         result = {'start': (start := datetime.now()).isoformat()}
 
         try:
-            result['result'] = self.run(system, args)
+            result['result'] = self.run(system)
         except SSHConnectionError:
             syslogger(system).error('Could not establish SSH connection.')
             result['online'] = False
@@ -93,75 +62,16 @@ class BaseWorker:
         result['duration'] = str(end - start)
         return result
 
-    @staticmethod
-    def run(system: int, args: Namespace) -> dict:
+    def run(self, system: int) -> dict:
         """Runs the respective processes."""
         raise NotImplementedError()
 
 
-def multiprocess(
-        worker_cls: Type[BaseWorker],
-        systems: list[int],
-        processes: int,
-        args: Namespace
-) -> dict:
-    """Spawns workers and waits for them to finish."""
+def consume(queue: Queue) -> Iterator[Any]:
+    """Iterates over a queue until it is empty."""
 
-    wait_for_processes(list(spawn_workers(
-        worker_cls,
-        processes,
-        sequence_to_queue(systems),
-        results := Queue(),
-        args
-    )))
-    return dict(iter_queue(results))
-
-
-def sequence_to_queue(sequence: Sequence[Any]) -> JoinableQueue:
-    """Returns a queue with items from the given sequence."""
-
-    queue = JoinableQueue(len(sequence))
-
-    for item in sequence:
-        queue.put(item)
-
-    return queue
-
-
-def spawn_workers(
-        worker_cls: Type[BaseWorker],
-        amount: int,
-        systems: JoinableQueue,
-        results: Queue,
-        args: Namespace
-) -> Iterator[Process]:
-    """Spawns worker processes."""
-
-    for index in range(amount):
-        worker = worker_cls(index, systems, results)
-        process = Process(target=worker, args=(args,))
-        process.start()
-        yield process
-
-
-def wait_for_processes(processes: list[Process]) -> None:
-    """Wait for the given processes."""
-
-    try:
-        for process in processes:
-            process.join()
-    except KeyboardInterrupt:
-        for process in processes:
-            process.kill()
-
-        raise
-
-
-def iter_queue(queue: Queue) -> Iterator[Any]:
-    """Yield queue items."""
-
-    try:
-        while True:
+    while True:
+        try:
             yield queue.get_nowait()
-    except Empty:
-        return
+        except Empty:
+            break

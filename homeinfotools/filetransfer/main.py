@@ -1,11 +1,11 @@
 """Batch sync files."""
 
 from logging import basicConfig
+from multiprocessing import Pool, Queue
 from random import shuffle
 
 from homeinfotools.functions import get_log_level
 from homeinfotools.logging import LOG_FORMAT
-from homeinfotools.multiprocessing import multiprocess
 from homeinfotools.filetransfer.argparse import get_args
 from homeinfotools.filetransfer.worker import Worker
 
@@ -23,7 +23,8 @@ def main() -> int:
         shuffle(args.system)
 
     try:
-        multiprocess(Worker, args.system, args.processes, args=args)
+        with Pool(args.processes) as pool:
+            pool.map(Worker(Queue(), args), args.system, args.chunk_size)
     except KeyboardInterrupt:
         return 1
 
