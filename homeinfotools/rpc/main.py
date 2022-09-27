@@ -28,8 +28,7 @@ def main() -> int:
     try:
         with Pool(args.processes) as pool:
             pool.map(
-                Worker.spawner(args, results), args.system,
-                chunksize=args.chunk_size
+                Worker(args, results), args.system, chunksize=args.chunk_size
             )
     except KeyboardInterrupt:
         return 1

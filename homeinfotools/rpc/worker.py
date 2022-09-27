@@ -12,17 +12,17 @@ __all__ = ['Worker']
 class Worker(BaseWorker):
     """Stored args and manager to process systems."""
 
-    def run(self) -> dict:
+    def run(self, system: int) -> dict:
         """Runs the worker."""
         result = {}
 
         if self.args.sysupgrade:
-            result['sysupgrade'] = sysupgrade(self.system, self.args)
+            result['sysupgrade'] = sysupgrade(system, self.args)
 
         if self.args.execute:
-            result['execute'] = runcmd(self.system, self.args)
+            result['execute'] = runcmd(system, self.args)
 
         if self.args.reboot:
-            result['reboot'] = reboot(self.system, self.args)
+            result['reboot'] = reboot(system, self.args)
 
         return result

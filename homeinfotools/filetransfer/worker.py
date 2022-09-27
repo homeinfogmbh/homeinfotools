@@ -10,6 +10,6 @@ __all__ = ['Worker']
 class Worker(BaseWorker):
     """Stored args and manager to process systems."""
 
-    def run(self) -> dict:
+    def run(self, system: int) -> dict:
         """Runs the worker."""
-        return {'rsync': filetransfer(self.system, self.args)}
+        return {'rsync': filetransfer(system, self.args)}
