@@ -1,7 +1,7 @@
 """Processing of systems."""
 
 from homeinfotools.filetransfer.filetransfer import filetransfer
-from homeinfotools.multiprocessing import BaseWorker
+from homeinfotools.worker import BaseWorker
 
 
 __all__ = ['Worker']

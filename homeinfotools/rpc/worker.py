@@ -1,9 +1,9 @@
 """Processing of systems."""
 
-from homeinfotools.multiprocessing import BaseWorker
 from homeinfotools.rpc.reboot import reboot
 from homeinfotools.rpc.runcmd import runcmd
 from homeinfotools.rpc.sysupgrade import sysupgrade
+from homeinfotools.worker import BaseWorker
 
 
 __all__ = ['Worker']
