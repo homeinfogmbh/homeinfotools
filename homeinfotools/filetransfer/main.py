@@ -1,7 +1,7 @@
 """Batch sync files."""
 
 from logging import basicConfig
-from multiprocessing import Pool, Queue
+from multiprocessing import Manager, Pool
 from random import shuffle
 
 from homeinfotools.functions import get_log_level
@@ -22,9 +22,11 @@ def main() -> int:
     if args.shuffle:
         shuffle(args.system)
 
+    result = Manager().dict()
+
     try:
         with Pool(args.processes) as pool:
-            pool.map(Worker(Queue(), args), args.system, args.chunk_size)
+            pool.map(Worker(result, args), args.system, args.chunk_size)
     except KeyboardInterrupt:
         return 1
 

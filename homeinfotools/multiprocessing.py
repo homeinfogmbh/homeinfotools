@@ -3,9 +3,6 @@
 from argparse import Namespace
 from datetime import datetime
 from logging import INFO, Logger, getLogger
-from multiprocessing import Queue
-from queue import Empty
-from typing import Any, Iterator
 
 from setproctitle import setproctitle
 
@@ -13,7 +10,7 @@ from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['BaseWorker', 'consume']
+__all__ = ['BaseWorker']
 
 
 class BaseWorker:
@@ -21,7 +18,7 @@ class BaseWorker:
 
     __slots__ = ('results', 'args', 'system')
 
-    def __init__(self, results: Queue, args: Namespace):
+    def __init__(self, results: dict, args: Namespace):
         """Sets the command line arguments."""
         self.results = results
         self.args = args
@@ -31,7 +28,7 @@ class BaseWorker:
         """Runs the worker on the given system."""
         setproctitle(self.name)
         result = self.process_system(system)
-        self.results.put_nowait((system, result))
+        self.results[system] = result
         self.logger.info('Aborted')
 
     @property
@@ -65,13 +62,3 @@ class BaseWorker:
     def run(self, system: int) -> dict:
         """Runs the respective processes."""
         raise NotImplementedError()
-
-
-def consume(queue: Queue) -> Iterator[Any]:
-    """Iterates over a queue until it is empty."""
-
-    while True:
-        try:
-            yield queue.get_nowait()
-        except Empty:
-            break
