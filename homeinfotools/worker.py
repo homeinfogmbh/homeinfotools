@@ -3,6 +3,7 @@
 from argparse import Namespace
 from datetime import datetime
 from logging import INFO, Logger, getLogger
+from typing import Callable
 
 from setproctitle import setproctitle
 
@@ -16,20 +17,35 @@ __all__ = ['BaseWorker']
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('results', 'args', 'system')
+    __slots__ = ('system', 'args', 'results')
 
-    def __init__(self, results: dict, args: Namespace):
+    def __init__(self, system: int, args: Namespace, results: dict):
         """Sets the command line arguments."""
-        self.results = results
+        self.system = system
         self.args = args
-        self.system = None
+        self.results = results
 
-    def __call__(self, system: int) -> None:
-        """Runs the worker on the given system."""
+    def __call__(self):
+        """Processes a single system."""
         setproctitle(self.name)
-        result = self.process_system(system)
-        self.results[system] = result
-        self.logger.info('Aborted')
+        result = {'start': (start := datetime.now()).isoformat()}
+
+        try:
+            result['result'] = self.run()
+        except SSHConnectionError:
+            syslogger(self.system).error('Could not establish SSH connection.')
+            result['online'] = False
+        else:
+            result['online'] = True
+
+        result['end'] = (end := datetime.now()).isoformat()
+        result['duration'] = str(end - start)
+        self.results[self.system] = result
+
+    @classmethod
+    def spawner(cls, args: Namespace, results: dict) -> Callable[[int], None]:
+        """Wrapper to spawn workers."""
+        return lambda system: cls(system, args=args, results=results)()
 
     @property
     def logger(self) -> Logger:
@@ -43,22 +59,6 @@ class BaseWorker:
         """Returns the worker's name."""
         return f'hidsltools-worker@{self.system}'
 
-    def process_system(self, system: int) -> dict:
-        """Processes a single system."""
-        result = {'start': (start := datetime.now()).isoformat()}
-
-        try:
-            result['result'] = self.run(system)
-        except SSHConnectionError:
-            syslogger(system).error('Could not establish SSH connection.')
-            result['online'] = False
-        else:
-            result['online'] = True
-
-        result['end'] = (end := datetime.now()).isoformat()
-        result['duration'] = str(end - start)
-        return result
-
-    def run(self, system: int) -> dict:
+    def run(self) -> dict:
         """Runs the respective processes."""
         raise NotImplementedError()

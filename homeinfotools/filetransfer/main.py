@@ -22,11 +22,14 @@ def main() -> int:
     if args.shuffle:
         shuffle(args.system)
 
-    result = Manager().dict()
+    results = Manager().dict()
 
     try:
         with Pool(args.processes) as pool:
-            pool.map(Worker(result, args), args.system, args.chunk_size)
+            pool.map(
+                Worker.spawner(args, results), args.system,
+                chunksize=args.chunk_size
+            )
     except KeyboardInterrupt:
         return 1
 

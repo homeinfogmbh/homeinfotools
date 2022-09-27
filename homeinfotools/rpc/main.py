@@ -23,16 +23,19 @@ def main() -> int:
     if args.shuffle:
         shuffle(args.system)
 
-    result = Manager().dict()
+    results = Manager().dict()
 
     try:
         with Pool(args.processes) as pool:
-            pool.map(Worker(result, args), args.system, args.chunk_size)
+            pool.map(
+                Worker.spawner(args, results), args.system,
+                chunksize=args.chunk_size
+            )
     except KeyboardInterrupt:
         return 1
 
     if args.json is not None:
         with args.json.open('w') as file:
-            dump(dict(result), file, indent=2)
+            dump(dict(results), file, indent=2)
 
     return 0
