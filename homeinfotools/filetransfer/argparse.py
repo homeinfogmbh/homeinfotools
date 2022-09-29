@@ -41,8 +41,7 @@ def get_args() -> Namespace:
         '-s', '--shuffle', action='store_true', help='shuffle systems'
     )
     parser.add_argument(
-        '-u', '--user', metavar='name', default='root',
-        help='set the ssh user name'
+        '-u', '--user', metavar='name', help='set the ssh user name'
     )
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'

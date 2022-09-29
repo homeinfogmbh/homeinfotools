@@ -68,8 +68,7 @@ def get_args() -> Namespace:
         help='seconds to wait for subprocesses to time out'
     )
     parser.add_argument(
-        '-u', '--user', metavar='name', default='root',
-        help='set the ssh user name'
+        '-u', '--user', metavar='name', help='set the ssh user name'
     )
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'
