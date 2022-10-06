@@ -14,7 +14,7 @@ def systemd_inhibit(
         why: str | None = None,
         mode: str | None = None
 ) -> list[str]:
-    """Wrap a commamd in systemd-inhibit."""
+    """Wrap a command in systemd-inhibit."""
 
     cmd = [SYSTEMD_INHIBIT]
 
