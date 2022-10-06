@@ -12,6 +12,7 @@ from homeinfotools.rpc.exceptions import SystemIOError
 from homeinfotools.rpc.exceptions import UnknownError
 from homeinfotools.rpc.sudo import sudo
 from homeinfotools.ssh import ssh
+from homeinfotools.systemd import systemd_inhibit
 
 
 __all__ = ['sysupgrade']
@@ -40,10 +41,12 @@ def lograise(
 def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the archlinux-keyring on that system."""
 
-    command = [
+    command = systemd_inhibit(
         PACMAN, '-Sy', 'archlinux-keyring', '--needed', '--noconfirm',
-        '--disable-download-timeout'
-    ]
+        '--disable-download-timeout',
+        who='pacman',
+        why='keyring-upgrade'
+    )
     command = sudo(*command)
     command = ssh(system, *command, user=args.user, no_stdin=args.no_stdin)
     syslogger(system).debug('Executing command: %s', command)
@@ -53,7 +56,11 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
 def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the system."""
 
-    command = [PACMAN, '-Syu', '--needed', '--disable-download-timeout']
+    command = systemd_inhibit(
+        PACMAN, '-Syu', '--needed', '--disable-download-timeout',
+        who='pacman',
+        why='system-upgrade'
+    )
 
     for package in args.install:
         command.append(package)
@@ -78,7 +85,11 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
 def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     """Cleans up the system."""
 
-    command = [PACMAN, '-Rncs', '$(pacman -Qmq; pacman -Qdtq)']
+    command = systemd_inhibit(
+        PACMAN, '-Rncs', '$(pacman -Qmq; pacman -Qdtq)',
+        who='pacman',
+        why='system-cleanup'
+    )
 
     if not args.yes:
         command.append('--noconfirm')
