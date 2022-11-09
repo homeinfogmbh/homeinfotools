@@ -8,10 +8,12 @@ from typing import Iterable
 
 from homeinfotools.his import update_credentials, HISSession
 from homeinfotools.logging import LOGGER
-from homeinfotools.termgr import SYSTEMS_URL
 
 
 __all__ = ['get_systems', 'filter_systems']
+
+
+SYSTEMS_URL = 'https://termgr.homeinfo.de/list/systems'
 
 
 def query_systems(account: str, passwd: str) -> list:
