@@ -16,7 +16,10 @@ __all__ = ['reboot']
 def reboot(system: int, args: Namespace) -> dict:
     """Reboots a system."""
 
-    command = ssh(system, *sudo(SYSTEMCTL, 'reboot'), no_stdin=args.no_stdin)
+    command = ssh(
+        system, *sudo(SYSTEMCTL, 'reboot'), user=args.user,
+        no_stdin=args.no_stdin
+    )
     syslogger(system).debug('Rebooting system %i.', system)
     completed_process = execute(command)
 

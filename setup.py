@@ -26,15 +26,13 @@ setup(
         'homeinfotools.filetransfer',
         'homeinfotools.his',
         'homeinfotools.query',
-        'homeinfotools.rpc',
-        'homeinfotools.vpn'
+        'homeinfotools.rpc'
     ],
     entry_points={
         'console_scripts': [
             'sysquery = homeinfotools.query.main:main',
             'sysrpc = homeinfotools.rpc.main:main',
-            'sysrsync = homeinfotools.filetransfer.main:main',
-            'sysvpn = homeinfotools.vpn.main:main',
+            'sysrsync = homeinfotools.filetransfer.main:main'
         ],
     },
     url='https://github.com/homeinfogmbh/homeinfotools',

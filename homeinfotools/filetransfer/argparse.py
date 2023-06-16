@@ -34,7 +34,14 @@ def get_args() -> Namespace:
         help='amount of parallel processes'
     )
     parser.add_argument(
+        '-q', '--chunk-size', type=int, metavar='n',
+        help='chunk size for multiprocessing'
+    )
+    parser.add_argument(
         '-s', '--shuffle', action='store_true', help='shuffle systems'
+    )
+    parser.add_argument(
+        '-u', '--user', metavar='name', help='set the ssh user name'
     )
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='enable verbose logging'
