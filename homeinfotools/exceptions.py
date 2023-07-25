@@ -3,7 +3,7 @@
 from subprocess import CompletedProcess
 
 
-__all__ = ['RemoteProcessError', 'SSHConnectionError']
+__all__ = ["RemoteProcessError", "SSHConnectionError"]
 
 
 class RemoteProcessError(Exception):
@@ -23,13 +23,13 @@ class RemoteProcessError(Exception):
         items = []
 
         if stdout := self.stdout:
-            items.append(f'STDOUT: {stdout}')
+            items.append(f"STDOUT: {stdout}")
 
         if stderr := self.stderr:
-            items.append(f'STDERR: {stderr}')
+            items.append(f"STDERR: {stderr}")
 
-        items.append(f'EXIT_CODE: {self.returncode}')
-        return ' / '.join(items)
+        items.append(f"EXIT_CODE: {self.returncode}")
+        return " / ".join(items)
 
 
 class SSHConnectionError(RemoteProcessError):

@@ -4,7 +4,7 @@ from homeinfotools.filetransfer.filetransfer import filetransfer
 from homeinfotools.worker import BaseWorker
 
 
-__all__ = ['Worker']
+__all__ = ["Worker"]
 
 
 class Worker(BaseWorker):
@@ -12,4 +12,4 @@ class Worker(BaseWorker):
 
     def run(self, system: int) -> dict:
         """Runs the worker."""
-        return {'rsync': filetransfer(system, self.args)}
+        return {"rsync": filetransfer(system, self.args)}

@@ -6,7 +6,7 @@ from homeinfotools.his.exceptions import DownloadError, LoginError
 from homeinfotools.logging import LOGGER
 
 
-__all__ = ['ErrorHandler']
+__all__ = ["ErrorHandler"]
 
 
 class ErrorHandler:
@@ -22,7 +22,7 @@ class ErrorHandler:
     def __exit__(self, _, value, __):
         """Handles login and download errors."""
         if isinstance(value, LoginError):
-            LOGGER.error('Error during login.')
+            LOGGER.error("Error during login.")
             LOGGER.debug(value)
             exit(2)
 

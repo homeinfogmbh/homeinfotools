@@ -3,7 +3,7 @@
 from requests import Response
 
 
-__all__ = ['WebAPIError', 'DownloadError', 'LoginError']
+__all__ = ["WebAPIError", "DownloadError", "LoginError"]
 
 
 class WebAPIError(Exception):

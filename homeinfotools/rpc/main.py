@@ -11,7 +11,7 @@ from homeinfotools.rpc.argparse import get_args
 from homeinfotools.rpc.worker import Worker
 
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
 def main() -> int:
@@ -27,14 +27,12 @@ def main() -> int:
 
     try:
         with Pool(args.processes) as pool:
-            pool.map(
-                Worker(args, results), args.system, chunksize=args.chunk_size
-            )
+            pool.map(Worker(args, results), args.system, chunksize=args.chunk_size)
     except KeyboardInterrupt:
         return 1
 
     if args.json is not None:
-        with args.json.open('w') as file:
+        with args.json.open("w") as file:
             dump(dict(results), file, indent=2)
 
     return 0

@@ -10,7 +10,7 @@ from homeinfotools.filetransfer.argparse import get_args
 from homeinfotools.filetransfer.worker import Worker
 
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
 def main() -> int:
@@ -26,9 +26,7 @@ def main() -> int:
 
     try:
         with Pool(args.processes) as pool:
-            pool.map(
-                Worker(args, results), args.system, chunksize=args.chunk_size
-            )
+            pool.map(Worker(args, results), args.system, chunksize=args.chunk_size)
     except KeyboardInterrupt:
         return 1
 

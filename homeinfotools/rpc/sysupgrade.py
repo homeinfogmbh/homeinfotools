@@ -15,12 +15,10 @@ from homeinfotools.ssh import ssh
 from homeinfotools.systemd import systemd_inhibit
 
 
-__all__ = ['sysupgrade']
+__all__ = ["sysupgrade"]
 
 
-def lograise(
-        system: int, message: str, completed_process: CompletedProcess
-) -> None:
+def lograise(system: int, message: str, completed_process: CompletedProcess) -> None:
     """Issues a warning message and raises an exception."""
 
     if completed_process.returncode == 255:
@@ -42,14 +40,18 @@ def upgrade_keyring(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the archlinux-keyring on that system."""
 
     command = systemd_inhibit(
-        PACMAN, '-Sy', 'archlinux-keyring', '--needed', '--noconfirm',
-        '--disable-download-timeout',
-        who='pacman',
-        why='keyring-upgrade'
+        PACMAN,
+        "-Sy",
+        "archlinux-keyring",
+        "--needed",
+        "--noconfirm",
+        "--disable-download-timeout",
+        who="pacman",
+        why="keyring-upgrade",
     )
     command = sudo(*command)
     command = ssh(system, *command, user=args.user, no_stdin=args.no_stdin)
-    syslogger(system).debug('Executing command: %s', command)
+    syslogger(system).debug("Executing command: %s", command)
     return execute(command, timeout=args.timeout)
 
 
@@ -57,28 +59,31 @@ def upgrade_system(system: int, args: Namespace) -> CompletedProcess:
     """Upgrades the system."""
 
     command = systemd_inhibit(
-        PACMAN, '-Syu', '--needed', '--disable-download-timeout',
-        who='pacman',
-        why='system-upgrade'
+        PACMAN,
+        "-Syu",
+        "--needed",
+        "--disable-download-timeout",
+        who="pacman",
+        why="system-upgrade",
     )
 
     for package in args.install:
         command.append(package)
 
     for glob in args.overwrite:
-        command.append('--overwrite')
+        command.append("--overwrite")
         command.append(glob)
 
     if not args.yes:
-        command.append('--noconfirm')
+        command.append("--noconfirm")
 
-    command = ' '.join(sudo(*command))
+    command = " ".join(sudo(*command))
 
     if args.yes:
-        command = f'yes | {command}'
+        command = f"yes | {command}"
 
     command = ssh(system, command, user=args.user, no_stdin=args.no_stdin)
-    syslogger(system).debug('Executing command: %s', command)
+    syslogger(system).debug("Executing command: %s", command)
     return execute(command, timeout=args.timeout)
 
 
@@ -86,49 +91,51 @@ def cleanup_system(system: int, args: Namespace) -> CompletedProcess:
     """Cleans up the system."""
 
     command = systemd_inhibit(
-        PACMAN, '-Rncs', '$(pacman -Qmq; pacman -Qdtq)',
-        who='pacman',
-        why='system-cleanup'
+        PACMAN,
+        "-Rncs",
+        "$(pacman -Qmq; pacman -Qdtq)",
+        who="pacman",
+        why="system-cleanup",
     )
 
     if not args.yes:
-        command.append('--noconfirm')
+        command.append("--noconfirm")
 
-    command = ' '.join(sudo(*command))
+    command = " ".join(sudo(*command))
 
     if args.yes:
-        command = f'yes | {command}'
+        command = f"yes | {command}"
 
     command = ssh(system, command, user=args.user, no_stdin=args.no_stdin)
-    syslogger(system).debug('Executing command: %s', command)
+    syslogger(system).debug("Executing command: %s", command)
     return execute(command, timeout=args.timeout)
 
 
 def upgrade(system: int, args: Namespace) -> dict:
     """Upgrade process function."""
 
-    syslogger(system).info('Upgrading system.')
+    syslogger(system).info("Upgrading system.")
     result = {}
 
     if args.keyring:
         completed_process = upgrade_keyring(system, args=args)
-        result['keyring'] = completed_process_to_json(completed_process)
+        result["keyring"] = completed_process_to_json(completed_process)
 
         if completed_process.returncode != 0:
-            lograise(system, 'Could not update keyring.', completed_process)
+            lograise(system, "Could not update keyring.", completed_process)
 
     completed_process = upgrade_system(system, args=args)
-    result['sysupgrade'] = completed_process_to_json(completed_process)
+    result["sysupgrade"] = completed_process_to_json(completed_process)
 
     if completed_process.returncode != 0:
-        lograise(system, 'Could not upgrade system.', completed_process)
+        lograise(system, "Could not upgrade system.", completed_process)
 
     if args.cleanup:
         completed_process = cleanup_system(system, args=args)
-        result['pkgcleanup'] = completed_process_to_json(completed_process)
+        result["pkgcleanup"] = completed_process_to_json(completed_process)
 
         if completed_process.returncode not in {0, 1}:
-            lograise(system, 'Could not clean up system.', completed_process)
+            lograise(system, "Could not clean up system.", completed_process)
 
     return result
 
@@ -139,20 +146,18 @@ def sysupgrade(system: int, args: Namespace) -> dict:
     try:
         return upgrade(system, args)
     except SystemIOError as error:
-        syslogger(system).error('I/O error.')
-        syslogger(system).debug('%s', error)
+        syslogger(system).error("I/O error.")
+        syslogger(system).debug("%s", error)
         return completed_process_to_json(error.completed_process)
     except TimeoutExpired as error:
-        syslogger(system).error(
-            'Subprocess timed out after %s seconds.', error.timeout
-        )
-        syslogger(system).debug('%s', error)
-        return {'timeout': error.timeout}
+        syslogger(system).error("Subprocess timed out after %s seconds.", error.timeout)
+        syslogger(system).debug("%s", error)
+        return {"timeout": error.timeout}
     except PacmanError as error:
-        syslogger(system).error('Pacman error.')
-        syslogger(system).debug('%s', error)
+        syslogger(system).error("Pacman error.")
+        syslogger(system).debug("%s", error)
         return completed_process_to_json(error.completed_process)
     except UnknownError as error:
-        syslogger(system).error('Unknown error.')
-        syslogger(system).debug('%s', error)
+        syslogger(system).error("Unknown error.")
+        syslogger(system).debug("%s", error)
         return completed_process_to_json(error.completed_process)

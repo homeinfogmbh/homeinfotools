@@ -5,10 +5,10 @@ from pathlib import Path
 from sys import argv
 
 
-__all__ = ['LOG_FORMAT', 'LOGGER', 'syslogger']
+__all__ = ["LOG_FORMAT", "LOGGER", "syslogger"]
 
 
-LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
+LOG_FORMAT = "[%(levelname)s] %(name)s: %(message)s"
 LOGGER = getLogger(Path(argv[0]).name)
 
 

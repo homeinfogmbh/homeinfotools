@@ -8,7 +8,7 @@ from homeinfotools.functions import completed_process_to_json, execute
 from homeinfotools.ssh import ssh
 
 
-__all__ = ['runcmd']
+__all__ = ["runcmd"]
 
 
 def runcmd(system: int, args: Namespace) -> dict:
@@ -21,7 +21,7 @@ def runcmd(system: int, args: Namespace) -> dict:
     if completed_process.returncode == 255:
         raise SSHConnectionError(completed_process)
 
-    syslogger(system).debug('Returncode: %i', completed_process.returncode)
+    syslogger(system).debug("Returncode: %i", completed_process.returncode)
 
     if stdout := completed_process.stdout:
         syslogger(system).info(stdout.strip())
@@ -30,6 +30,6 @@ def runcmd(system: int, args: Namespace) -> dict:
         syslogger(system).warning(stderr.strip())
 
     if not completed_process.returncode == 0:
-        syslogger(system).error('Command failed.')
+        syslogger(system).error("Command failed.")
 
     return completed_process_to_json(completed_process)

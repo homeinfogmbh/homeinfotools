@@ -9,7 +9,7 @@ from homeinfotools.query.argparse import get_args
 from homeinfotools.query.functions import filter_systems, get_systems
 
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
 @handle_keyboard_interrupt
@@ -19,10 +19,10 @@ def main() -> None:
     args = get_args()
     loglevel = DEBUG if args.debug else INFO if args.verbose else WARNING
     basicConfig(format=LOG_FORMAT, level=loglevel)
-    LOGGER.info('Retrieving systems.')
+    LOGGER.info("Retrieving systems.")
 
-    with ErrorHandler('Error during JSON data retrieval.'):
+    with ErrorHandler("Error during JSON data retrieval."):
         systems = get_systems(args)
 
     for system in filter_systems(systems, args):
-        print(system.get('id'))
+        print(system.get("id"))

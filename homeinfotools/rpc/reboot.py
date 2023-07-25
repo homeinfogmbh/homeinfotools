@@ -10,23 +10,22 @@ from homeinfotools.rpc.sudo import sudo
 from homeinfotools.ssh import ssh
 
 
-__all__ = ['reboot']
+__all__ = ["reboot"]
 
 
 def reboot(system: int, args: Namespace) -> dict:
     """Reboots a system."""
 
     command = ssh(
-        system, *sudo(SYSTEMCTL, 'reboot'), user=args.user,
-        no_stdin=args.no_stdin
+        system, *sudo(SYSTEMCTL, "reboot"), user=args.user, no_stdin=args.no_stdin
     )
-    syslogger(system).debug('Rebooting system %i.', system)
+    syslogger(system).debug("Rebooting system %i.", system)
     completed_process = execute(command)
 
     if completed_process.returncode == 0:
-        syslogger(system).info('System %i is rebooting.', system)
+        syslogger(system).info("System %i is rebooting.", system)
     elif completed_process.returncode == 1:
-        syslogger(system).warning('System %i may be rebooting.', system)
+        syslogger(system).warning("System %i may be rebooting.", system)
     elif completed_process.returncode == 255:
         raise SSHConnectionError(completed_process)
 

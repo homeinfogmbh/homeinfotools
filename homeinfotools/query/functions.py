@@ -10,16 +10,16 @@ from homeinfotools.his import update_credentials, HISSession
 from homeinfotools.logging import LOGGER
 
 
-__all__ = ['get_systems', 'filter_systems']
+__all__ = ["get_systems", "filter_systems"]
 
 
-SYSTEMS_URL = 'https://termgr.homeinfo.de/list/systems'
+SYSTEMS_URL = "https://termgr.homeinfo.de/list/systems"
 
 
 def query_systems(account: str, passwd: str) -> list:
     """Query systems."""
 
-    LOGGER.debug('Querying systems.')
+    LOGGER.debug("Querying systems.")
 
     with HISSession(account, passwd) as session:
         return session.get_json(SYSTEMS_URL)
@@ -28,9 +28,9 @@ def query_systems(account: str, passwd: str) -> list:
 def cache_systems(systems: list, args: Namespace) -> list:
     """Caches the systems and returns them."""
 
-    cache = {'timestamp': datetime.now().isoformat(), 'systems': systems}
+    cache = {"timestamp": datetime.now().isoformat(), "systems": systems}
 
-    with args.cache_file.open('w') as file:
+    with args.cache_file.open("w") as file:
         dump(cache, file)
 
     return systems
@@ -40,24 +40,24 @@ def systems_from_cache(args: Namespace) -> list:
     """Returns cached systems."""
 
     if not args.cache_file.exists():
-        LOGGER.info('Initializing cache.')
+        LOGGER.info("Initializing cache.")
         systems = query_systems(*update_credentials(args.user))
         return cache_systems(systems, args)
 
-    LOGGER.debug('Loading cache.')
+    LOGGER.debug("Loading cache.")
 
-    with args.cache_file.open('r') as file:
+    with args.cache_file.open("r") as file:
         cache = load(file)
 
-    if timestamp := cache.get('timestamp'):
+    if timestamp := cache.get("timestamp"):
         timestamp = datetime.fromisoformat(timestamp)
 
         if timestamp + timedelta(hours=args.cache_time) > datetime.now():
-            return cache['systems']
+            return cache["systems"]
 
-        LOGGER.info('Cache has expired.')
+        LOGGER.info("Cache has expired.")
     else:
-        LOGGER.warning('Corrupted cache.')
+        LOGGER.warning("Corrupted cache.")
 
     return cache_systems(query_systems(*update_credentials(args.user)), args)
 
@@ -87,53 +87,52 @@ def substr_ic_in(string: str, haystack: Iterable[str]) -> bool:
 def match_system(system: dict, *, args: Namespace) -> bool:
     """Matches the system to the filters."""
 
-    if args.id and system.get('id') not in args.id:
+    if args.id and system.get("id") not in args.id:
         return False
 
-    if args.os and system.get('operatingSystem') not in args.os:
+    if args.os and system.get("operatingSystem") not in args.os:
         return False
 
-    if args.sn and system.get('serialNumber') not in args.sn:
+    if args.sn and system.get("serialNumber") not in args.sn:
         return False
 
-    deployment = system.get('deployment') or {}
+    deployment = system.get("deployment") or {}
 
-    if args.deployment and deployment.get('id') not in args.deployment:
+    if args.deployment and deployment.get("id") not in args.deployment:
         return False
 
     if args.customer:
-        customer = deployment.get('customer') or {}
-        company = customer.get('company') or {}
+        customer = deployment.get("customer") or {}
+        company = customer.get("company") or {}
 
-        if cid := customer.get('id'):
+        if cid := customer.get("id"):
             match = str(cid) in args.customer
         else:
             match = False
 
-        match = match or substr_ic_in(company.get('name'), args.customer)
-        match = match or substr_ic_in(
-            company.get('abbreviation'), args.customer)
+        match = match or substr_ic_in(company.get("name"), args.customer)
+        match = match or substr_ic_in(company.get("abbreviation"), args.customer)
 
         if not match:
             return False
 
-    if args.type and deployment.get('type') not in args.type:
+    if args.type and deployment.get("type") not in args.type:
         return False
 
-    address = deployment.get('address') or {}
+    address = deployment.get("address") or {}
 
-    if args.street and not substr_ic_in(address.get('street'), args.street):
+    if args.street and not substr_ic_in(address.get("street"), args.street):
         return False
 
     if args.house_number and not substr_ic_in(
-            address.get('houseNumber'), args.house_number):
+        address.get("houseNumber"), args.house_number
+    ):
         return False
 
-    if args.zip_code and not substr_ic_in(
-            address.get('zipCode'), args.zip_code):
+    if args.zip_code and not substr_ic_in(address.get("zipCode"), args.zip_code):
         return False
 
-    if args.city and not substr_ic_in(address.get('city'), args.city):
+    if args.city and not substr_ic_in(address.get("city"), args.city):
         return False
 
     return True

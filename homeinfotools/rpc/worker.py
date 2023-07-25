@@ -6,7 +6,7 @@ from homeinfotools.rpc.sysupgrade import sysupgrade
 from homeinfotools.worker import BaseWorker
 
 
-__all__ = ['Worker']
+__all__ = ["Worker"]
 
 
 class Worker(BaseWorker):
@@ -17,12 +17,12 @@ class Worker(BaseWorker):
         result = {}
 
         if self.args.sysupgrade:
-            result['sysupgrade'] = sysupgrade(system, self.args)
+            result["sysupgrade"] = sysupgrade(system, self.args)
 
         if self.args.execute:
-            result['execute'] = runcmd(system, self.args)
+            result["execute"] = runcmd(system, self.args)
 
         if self.args.reboot:
-            result['reboot'] = reboot(system, self.args)
+            result["reboot"] = reboot(system, self.args)
 
         return result

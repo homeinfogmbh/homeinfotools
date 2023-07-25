@@ -7,9 +7,9 @@ from homeinfotools.his.session import HISSession
 
 
 __all__ = [
-    'DownloadError',
-    'LoginError',
-    'ErrorHandler',
-    'HISSession',
-    'update_credentials'
+    "DownloadError",
+    "LoginError",
+    "ErrorHandler",
+    "HISSession",
+    "update_credentials",
 ]

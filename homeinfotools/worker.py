@@ -9,13 +9,13 @@ from homeinfotools.exceptions import SSHConnectionError
 from homeinfotools.logging import syslogger
 
 
-__all__ = ['BaseWorker']
+__all__ = ["BaseWorker"]
 
 
 class BaseWorker:
     """Stored args and manager to process systems."""
 
-    __slots__ = ('args', 'results')
+    __slots__ = ("args", "results")
 
     def __init__(self, args: Namespace, results: dict):
         """Sets the command line arguments."""
@@ -24,19 +24,19 @@ class BaseWorker:
 
     def __call__(self, system: int):
         """Processes a single system."""
-        setproctitle(f'hidsltools-worker@{system}')
-        result = {'start': (start := datetime.now()).isoformat()}
+        setproctitle(f"hidsltools-worker@{system}")
+        result = {"start": (start := datetime.now()).isoformat()}
 
         try:
-            result['result'] = self.run(system)
+            result["result"] = self.run(system)
         except SSHConnectionError:
-            syslogger(system).error('Could not establish SSH connection.')
-            result['online'] = False
+            syslogger(system).error("Could not establish SSH connection.")
+            result["online"] = False
         else:
-            result['online'] = True
+            result["online"] = True
 
-        result['end'] = (end := datetime.now()).isoformat()
-        result['duration'] = str(end - start)
+        result["end"] = (end := datetime.now()).isoformat()
+        result["duration"] = str(end - start)
         self.results[system] = result
 
     def run(self, system: int) -> dict:

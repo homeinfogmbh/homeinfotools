@@ -9,31 +9,21 @@ from homeinfotools.functions import completed_process_to_json, execute
 from homeinfotools.ssh import rsync
 
 
-__all__ = ['filetransfer']
+__all__ = ["filetransfer"]
 
 
-def send(
-        system: int,
-        src: Path,
-        dst: Path,
-        *,
-        user: str | None = None
-) -> list[str]:
+def send(system: int, src: Path, dst: Path, *, user: str | None = None) -> list[str]:
     """Sends a file to the system."""
 
     return rsync(src, (system, dst), user=user)
 
 
 def retrieve(
-        system: int,
-        src: Path,
-        dst: Path,
-        *,
-        user: str | None = None
+    system: int, src: Path, dst: Path, *, user: str | None = None
 ) -> list[str]:
     """Retrieves a file from the system."""
 
-    dst = dst.parent / (dst.stem + f'.{system}' + dst.suffix)
+    dst = dst.parent / (dst.stem + f".{system}" + dst.suffix)
     return rsync((system, src), dst, user=user)
 
 
@@ -45,7 +35,7 @@ def filetransfer(system: int, args: Namespace) -> dict:
     elif args.send:
         command = send(system, args.src, args.dst, user=args.user)
     else:
-        raise ValueError('No direction selected.')
+        raise ValueError("No direction selected.")
 
     syslogger(system).debug('Sending "%s" to system.', args.src)
     completed_process = execute(command)
@@ -53,7 +43,7 @@ def filetransfer(system: int, args: Namespace) -> dict:
     if completed_process.returncode == 255:
         raise SSHConnectionError(completed_process)
 
-    syslogger(system).debug('Returncode: %i', completed_process.returncode)
+    syslogger(system).debug("Returncode: %i", completed_process.returncode)
 
     if stdout := completed_process.stdout:
         syslogger(system).info(stdout.strip())
@@ -62,6 +52,6 @@ def filetransfer(system: int, args: Namespace) -> dict:
         syslogger(system).warning(stderr.strip())
 
     if not completed_process.returncode == 0:
-        syslogger(system).error('File transfer failed.')
+        syslogger(system).error("File transfer failed.")
 
     return completed_process_to_json(completed_process)

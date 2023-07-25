@@ -3,7 +3,7 @@
 from homeinfotools.exceptions import RemoteProcessError
 
 
-__all__ = ['SystemIOError', 'PacmanError', 'UnknownError']
+__all__ = ["SystemIOError", "PacmanError", "UnknownError"]
 
 
 class SystemIOError(RemoteProcessError):
